@@ -4,21 +4,22 @@
  */
 package core.model;
 
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  *
  * @author daniel
  */
 public class Storage {
-
+    
     private static Storage instance = null;
-    private static HashMap<Long, Object> storage;
-
+    private static ArrayList<User> users;
+    
     private Storage() {
-        storage = new HashMap<Long, Object>();
+        users = new ArrayList<User>();
     }
-
+    
     public static Storage getInstance() {
         if (instance == null) {
             instance = new Storage();
@@ -26,20 +27,49 @@ public class Storage {
         }
         return instance;
     }
-
-    public User getUser(Long id) {
-        return (User) storage.get(id);
-    }
     
-    public User getUser(String username) {
-        for (Object value : storage.values()) {
-            if (value instanceof User) {
-                User user = (User) value;
-                if (user.getUsername().equals(username)) {
-                    return user;
-                }
+    public User getUserById(long id) {
+        for (var user : users) {
+            if (user.id == id) {
+                return user;
             }
         }
         return null;
+    }
+    
+    public boolean addUser(User user) {
+        if (getUserById(user.id) != null) {
+            return false;
+        }
+        users.add(user);
+        return true;
+    }
+    
+    public User getUserByUsername(String username) {
+        for (var user : users) {
+            if (user.username.equals(username)) {
+                return user;
+            }
+        }
+        return null;
+    }
+    
+    public boolean updatePatient(long id, String username, String fname, String lname, String password, String email, LocalDate birthdate, boolean gender, long phone, String address) {
+        User found = getUserById(id);
+        if (!(found instanceof Patient patient)) {
+            return false;
+        }
+        
+        patient.setUsername(username);
+        patient.setFirstname(fname);
+        patient.setLastname(lname);
+        patient.setPassword(fname);
+        patient.setEmail(email);
+        patient.setBirthdate(birthdate);
+        patient.setGender(gender);
+        patient.setPhone(phone);
+        patient.setAddress(address);
+        
+        return true;
     }
 }

@@ -4,6 +4,8 @@
  */
 package core.controllers;
 
+import core.controllers.utils.Status;
+import core.controllers.utils.Response;
 import core.model.Storage;
 import core.model.User;
 
@@ -15,14 +17,11 @@ public class AuthController {
 
     static private Storage storage = Storage.getInstance();
 
-    static boolean loginUser(String username, String password) {
-        User user = storage.getUser(username);
-        if (user == null) {
-            return false;
+    static Response loginUser(String username, String password) {
+        User user = storage.getUserByUsername(username);
+        if (user == null || !user.getPassword().equals(password)) {
+            return new Response("Wrong username or password.", Status.UNAUTHORIZED);
         }
-        if (!user.getPassword().equals(password)) {
-            return false;
-        }
-        return true;
+        return new Response("Login successful.", Status.OK);
     }
 }

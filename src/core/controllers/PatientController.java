@@ -4,7 +4,11 @@
  */
 package core.controllers;
 
+import core.controllers.utils.Response;
+import core.controllers.utils.Status;
+import core.model.Patient;
 import core.model.Storage;
+import java.time.LocalDate;
 
 /**
  *
@@ -14,21 +18,70 @@ public class PatientController {
 
     static private Storage storage = Storage.getInstance();
 
-    static boolean registerPatient(long id, String username, String fname,
-            String lname, String password, String email, String birthdate,
-            boolean gender, long phone, String address) { // TODO: implement
+    static Response registerPatient(long id, String username, String fname,
+            String lname, String password, String passwordConfirm, String email, LocalDate birthdate,
+            boolean gender, long phone, String address) {
 
         if (fname.trim().equals("") || lname.trim().equals("") || username.trim().equals("")) {
-            return false;
+            return new Response("Every field should be filled in.", Status.BAD_REQUEST);
         }
 
-        return false;
+        if (storage.getUserById(id) != null) {
+            return new Response("Patient id already exists.", Status.CONFLICT);
+        }
+
+        if (id < 0 || id > 999999999999l) {
+            return new Response("Patient id should be 12 digits.", Status.BAD_REQUEST);
+        }
+
+        if (phone < 1000000000 || phone > 9999999999l) {
+            return new Response("Patient phone should be 10 digits.", Status.BAD_REQUEST);
+        }
+        
+        // TODO: validar email y birthdate
+
+        if (storage.getUserByUsername(username) != null) {
+            return new Response("Patient username already exists.", Status.CONFLICT);
+        }
+
+        if (!passwordConfirm.equals(password)) {
+            return new Response("Passwords do not match.", Status.BAD_REQUEST);
+        }
+
+        var user = new Patient(id, username, fname, lname, password, email, birthdate, gender, phone, address);
+        if (!storage.addUser(user)) {
+            return new Response("Patient id already exists.", Status.CONFLICT);
+        }
+
+        return new Response("Registration successful.", Status.OK);
     }
 
-    static boolean updatePatientData(long id, String username, String fname,
-            String lname, String password, String email, String birthdate,
-            boolean gender, long phone, String address) { // TODO: implement
-        return false;
+    static Response updatePatientData(long id, String username, String fname,
+            String lname, String password, String passwordConfirm, String email, LocalDate birthdate,
+            boolean gender, long phone, String address) {
+
+        if (fname.trim().equals("") || lname.trim().equals("") || username.trim().equals("")) {
+            return new Response("Every field should be filled in.", Status.BAD_REQUEST);
+        }
+
+        if (phone < 1000000000 || phone > 9999999999l) {
+            return new Response("Patient phone should be 10 digits.", Status.BAD_REQUEST);
+        }
+
+        // TODO: validar email y birthdate
+        if (storage.getUserByUsername(username) != null) {
+            return new Response("Patient username already exists.", Status.CONFLICT);
+        }
+
+        if (!passwordConfirm.equals(password)) {
+            return new Response("Passwords do not match.", Status.BAD_REQUEST);
+        }
+
+        if (!storage.updatePatient(id, username, fname, lname, password, email, birthdate, gender, phone, address)) {
+            return new Response("Patient was not found.", Status.BAD_REQUEST);
+        }
+
+        return new Response("Registration successful.", Status.OK);
     }
 
 }
