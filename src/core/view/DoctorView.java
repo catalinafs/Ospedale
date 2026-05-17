@@ -60,8 +60,8 @@ public class DoctorView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelRound1 = new core.model.PanelRound();
-        panelRound2 = new core.model.PanelRound();
+        panelRound1 = new core.view.PanelRound();
+        panelRound2 = new core.view.PanelRound();
         btnExitDV = new javax.swing.JButton();
         labelDV = new javax.swing.JLabel();
         btnBackDV = new javax.swing.JButton();
@@ -1399,8 +1399,8 @@ public class DoctorView extends javax.swing.JFrame {
     private javax.swing.JLabel labelSpecialtyDV;
     private javax.swing.JLabel labelTretDuratPresMediDV;
     private javax.swing.JLabel labelUserDV;
-    private core.model.PanelRound panelRound1;
-    private core.model.PanelRound panelRound2;
+    private core.view.PanelRound panelRound1;
+    private core.view.PanelRound panelRound2;
     private javax.swing.JTabbedPane tabbedPanelDV;
     private javax.swing.JTable tableAppointmentsDV;
     private javax.swing.JTable tableHistoryPatientDV;

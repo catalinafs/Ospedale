@@ -46,11 +46,11 @@ public class AdminView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelRound1 = new core.model.PanelRound();
-        panelRound2 = new core.model.PanelRound();
+        panelRound1 = new core.view.PanelRound();
+        panelRound2 = new core.view.PanelRound();
         btnExitAV = new javax.swing.JButton();
         labelAdminView = new javax.swing.JLabel();
-        panelRound3 = new core.model.PanelRound();
+        panelRound3 = new core.view.PanelRound();
         btnDoctorViewAV = new javax.swing.JButton();
         btnPatientViewAV = new javax.swing.JButton();
         labelFirstNameAV = new javax.swing.JLabel();
@@ -496,8 +496,8 @@ public class AdminView extends javax.swing.JFrame {
     private javax.swing.JLabel labelPatientAV;
     private javax.swing.JLabel labelSpecialtyAV;
     private javax.swing.JLabel labelUserAV;
-    private core.model.PanelRound panelRound1;
-    private core.model.PanelRound panelRound2;
-    private core.model.PanelRound panelRound3;
+    private core.view.PanelRound panelRound1;
+    private core.view.PanelRound panelRound2;
+    private core.view.PanelRound panelRound3;
     // End of variables declaration//GEN-END:variables
 }

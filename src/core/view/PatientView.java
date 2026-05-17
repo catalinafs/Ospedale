@@ -61,8 +61,8 @@ public class PatientView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelRound1 = new core.model.PanelRound();
-        panelRound2 = new core.model.PanelRound();
+        panelRound1 = new core.view.PanelRound();
+        panelRound2 = new core.view.PanelRound();
         btnExtiPV = new javax.swing.JButton();
         labelPatientView = new javax.swing.JLabel();
         btnBackPV = new javax.swing.JButton();
@@ -977,8 +977,8 @@ public class PatientView extends javax.swing.JFrame {
     private javax.swing.JLabel labelPhonePV;
     private javax.swing.JLabel labelRequestMediAppointPV;
     private javax.swing.JLabel labelUserPV;
-    private core.model.PanelRound panelRound1;
-    private core.model.PanelRound panelRound2;
+    private core.view.PanelRound panelRound1;
+    private core.view.PanelRound panelRound2;
     private javax.swing.JTabbedPane tabbedPanelPV;
     private javax.swing.JTable tableAppointPV;
     // End of variables declaration//GEN-END:variables

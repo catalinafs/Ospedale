@@ -47,11 +47,11 @@ public class MainView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelRound1 = new core.model.PanelRound();
-        panelRound2 = new core.model.PanelRound();
+        panelRound1 = new core.view.PanelRound();
+        panelRound2 = new core.view.PanelRound();
         btnExitMV = new javax.swing.JButton();
         tabbedPanelMV = new javax.swing.JTabbedPane();
-        panelRound3 = new core.model.PanelRound();
+        panelRound3 = new core.view.PanelRound();
         labelLoginMV = new javax.swing.JLabel();
         inputUserMV = new javax.swing.JTextField();
         labelUserMV = new javax.swing.JLabel();
@@ -473,6 +473,8 @@ public class MainView extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
+    
+    /* Lo comento para cambiar el main y mantengo este por si acaso
     public static void main(String args[]) {
         System.setProperty("flatlaf.useNativeLibrary", "false");
 
@@ -481,13 +483,13 @@ public class MainView extends javax.swing.JFrame {
         } catch (Exception ex) {
             System.err.println("Failed to initialize LaF");
         }
-        /* Create and display the form */
+        //Create and display the form
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new MainView().setVisible(true);
             }
         });
-    }
+    }*/
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEnterMV;
@@ -521,9 +523,9 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JLabel labelPhoneMV;
     private javax.swing.JLabel labelUserMV;
     private javax.swing.JLabel labelUserRegisMV;
-    private core.model.PanelRound panelRound1;
-    private core.model.PanelRound panelRound2;
-    private core.model.PanelRound panelRound3;
+    private core.view.PanelRound panelRound1;
+    private core.view.PanelRound panelRound2;
+    private core.view.PanelRound panelRound3;
     private javax.swing.JTabbedPane tabbedPanelMV;
     // End of variables declaration//GEN-END:variables
 }
