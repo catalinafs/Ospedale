@@ -2,8 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package packagee;
+package core.view;
 
+import core.model.Administrator;
+import core.model.Appointment;
+import core.model.AppointmentStatus;
+import core.model.Doctor;
+import core.model.Hospitalization;
+import core.model.Patient;
+import core.model.RoomType;
+import core.model.Specialty;
+import core.model.User;
+import core.view.AdminView;
+import core.view.MainView;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,8 +61,8 @@ public class PatientView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelRound1 = new packagee.PanelRound();
-        panelRound2 = new packagee.PanelRound();
+        panelRound1 = new core.model.PanelRound();
+        panelRound2 = new core.model.PanelRound();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jButton7 = new javax.swing.JButton();
@@ -885,7 +896,7 @@ public class PatientView extends javax.swing.JFrame {
         long idDoctor = Long.parseLong(jComboBox2.getItemAt(jComboBox2.getSelectedIndex()));
         Doctor doc = null;
         for(User use: this.users){
-            if (use.id  == idDoctor ){
+            if (use.getId()  == idDoctor ){ //Antes era use.id
                 doc = (Doctor) use;
             }
         }
@@ -968,7 +979,7 @@ public class PatientView extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
-    private packagee.PanelRound panelRound1;
-    private packagee.PanelRound panelRound2;
+    private core.model.PanelRound panelRound1;
+    private core.model.PanelRound panelRound2;
     // End of variables declaration//GEN-END:variables
 }

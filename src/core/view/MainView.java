@@ -2,9 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package packagee;
+package core.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import core.model.Administrator;
+import core.model.Appointment;
+import core.model.Doctor;
+import core.model.Hospitalization;
+import core.model.Patient;
+import core.model.User;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.Month;
@@ -41,11 +47,11 @@ public class MainView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelRound1 = new packagee.PanelRound();
-        panelRound2 = new packagee.PanelRound();
+        panelRound1 = new core.model.PanelRound();
+        panelRound2 = new core.model.PanelRound();
         jButton1 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        panelRound3 = new packagee.PanelRound();
+        panelRound3 = new core.model.PanelRound();
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -516,8 +522,8 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
-    private packagee.PanelRound panelRound1;
-    private packagee.PanelRound panelRound2;
-    private packagee.PanelRound panelRound3;
+    private core.model.PanelRound panelRound1;
+    private core.model.PanelRound panelRound2;
+    private core.model.PanelRound panelRound3;
     // End of variables declaration//GEN-END:variables
 }
