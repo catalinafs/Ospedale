@@ -20,18 +20,6 @@ public class Hospitalization {
     private Doctor doctor;
     private LocalDate date;
 
-    public String getId() {
-        return id;
-    }
-    private String reason;
-    private RoomType roomType;
-    private String observations;
-    private HospitalizationStatus status;
-
-    public void setStatus(HospitalizationStatus status) {
-        this.status = status;
-    }
-
     public Hospitalization(String id, Patient patient, Doctor doctor, LocalDate date, String reason, RoomType roomType, String observations) {
         this.id = id;
         this.patient = patient;
@@ -57,4 +45,44 @@ public class Hospitalization {
         this.status = hopsS;
     }
     
+    public String getId() {
+        return id;
+    }
+    private String reason;
+    private RoomType roomType;
+    private String observations;
+    private HospitalizationStatus status;
+
+    public void setStatus(HospitalizationStatus status) {
+        this.status = status;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public RoomType getRoomType() {
+        return roomType;
+    }
+
+    public String getObservations() {
+        return observations;
+    }
+
+    public HospitalizationStatus getStatus() {
+        return status;
+    }
+
 }

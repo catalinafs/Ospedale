@@ -24,8 +24,33 @@ public class Doctor extends User {
     public Doctor(long id, String username, String firstname, String lastname, String password, Specialty specialty, String licenceNumber, String assignedOffice) {
         super(id, username, firstname, lastname, password);
         hospitalizations = new ArrayList<>();
+        appointments = new ArrayList<>();
         this.specialty = specialty;
         this.licenceNumber = licenceNumber;
+        this.assignedOffice = assignedOffice;
+    }
+
+    public Specialty getSpecialty() {
+        return specialty;
+    }
+
+    public void setSpecialty(Specialty specialty) {
+        this.specialty = specialty;
+    }
+
+    public String getLicenceNumber() {
+        return licenceNumber;
+    }
+
+    public void setLicenceNumber(String licenceNumber) {
+        this.licenceNumber = licenceNumber;
+    }
+
+    public String getAssignedOffice() {
+        return assignedOffice;
+    }
+
+    public void setAssignedOffice(String assignedOffice) {
         this.assignedOffice = assignedOffice;
     }
 
@@ -33,23 +58,19 @@ public class Doctor extends User {
         return appointments;
     }
 
-    public Specialty getSpecialty() {
-        return specialty;
-    }
-    
-    public boolean addHospitalization(Hospitalization hosp){
-        return hospitalizations.add(hosp);
+    public void setAppointments(ArrayList<Appointment> appointments) {
+        this.appointments = appointments;
     }
 
-    public void setSpecialty(Specialty specialty) {
-        this.specialty = specialty;
+    public ArrayList<Hospitalization> getHospitalizations() {
+        return hospitalizations;
     }
 
-    public void setLicenceNumber(String licenceNumber) {
-        this.licenceNumber = licenceNumber;
+    public void setHospitalizations(ArrayList<Hospitalization> hospitalizations) {
+        this.hospitalizations = hospitalizations;
     }
 
-    public void setAssignedOffice(String assignedOffice) {
-        this.assignedOffice = assignedOffice;
-    }
+    public void addHospitalization(Hospitalization hospitalization){
+        hospitalizations.add(hospitalization);
+    }  
 }
