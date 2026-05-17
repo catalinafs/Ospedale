@@ -12,10 +12,10 @@ import java.util.HashMap;
  */
 public class Storage {
     private static Storage instance = null;
-    private static HashMap<Long, Object> db;
+    private static HashMap<Long, Object> storage;
     
     private Storage(){
-        db = new HashMap<Long,Object>();
+        storage = new HashMap<Long,Object>();
     }
     
     public static Storage getInstance(){
@@ -27,6 +27,6 @@ public class Storage {
     }
     
     public User getUser(Long id){
-        return (User)db.get(id);
+        return (User)storage.get(id);
     }
 }
