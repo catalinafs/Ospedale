@@ -71,9 +71,9 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                      <Component id="label" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelAdminView" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btnExitAdminView" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnExitAV" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -81,14 +81,14 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                      <Component id="btnExitAdminView" alignment="3" max="32767" attributes="0"/>
-                      <Component id="label" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnExitAV" alignment="3" max="32767" attributes="0"/>
+                      <Component id="labelAdminView" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JButton" name="btnExitAdminView">
+            <Component class="javax.swing.JButton" name="btnExitAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -103,10 +103,10 @@
                 <Property name="requestFocusEnabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnExitAdminViewActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnExitAVActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="label">
+            <Component class="javax.swing.JLabel" name="labelAdminView">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="14" style="0"/>
@@ -125,7 +125,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="326" max="-2" attributes="0"/>
-                              <Component id="btnSave" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnSaveAV" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
@@ -133,71 +133,71 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="labelFirstName" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="labelSpecialty" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="labelFirstNameAV" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="labelSpecialtyAV" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" alignment="0" attributes="0">
-                                              <Component id="inputSelectSpecialty" min="-2" max="-2" attributes="0"/>
+                                              <Component id="inputSelectSpecialtyAV" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="labelLicense" min="-2" max="-2" attributes="0"/>
+                                              <Component id="labelLicenseAV" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="inputLicense" min="-2" pref="109" max="-2" attributes="0"/>
+                                              <Component id="inputLicenseAV" min="-2" pref="109" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
-                                              <Component id="inputFirstname" min="-2" pref="109" max="-2" attributes="0"/>
+                                              <Component id="inputFirstnameAV" min="-2" pref="109" max="-2" attributes="0"/>
                                               <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                                              <Component id="labelLastname" min="-2" max="-2" attributes="0"/>
+                                              <Component id="labelLastnameAV" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="inputLastname" min="-2" pref="109" max="-2" attributes="0"/>
+                                              <Component id="inputLastnameAV" min="-2" pref="109" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="labelID" min="-2" max="-2" attributes="0"/>
+                                              <Component id="labelIDAV" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="inputID" min="-2" pref="109" max="-2" attributes="0"/>
+                                              <Component id="inputIDAV" min="-2" pref="109" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="labelAssignedOffice" min="-2" max="-2" attributes="0"/>
+                                      <Component id="labelAssignedOfficeAV" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="inputAssignedOffice" min="-2" pref="109" max="-2" attributes="0"/>
+                                      <Component id="inputAssignedOfficeAV" min="-2" pref="109" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="labelUser" min="-2" max="-2" attributes="0"/>
+                                          <Component id="labelUserAV" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="32767" attributes="0"/>
-                                          <Component id="inputUser" min="-2" pref="109" max="-2" attributes="0"/>
+                                          <Component id="inputUserAV" min="-2" pref="109" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="labelPass" min="-2" max="-2" attributes="0"/>
+                                          <Component id="labelPassAV" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="32767" attributes="0"/>
-                                          <Component id="inputPass" min="-2" pref="109" max="-2" attributes="0"/>
+                                          <Component id="inputPassAV" min="-2" pref="109" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="labelPassConfirm" min="-2" max="-2" attributes="0"/>
+                                          <Component id="labelPassConfirmAV" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="inputPassConfirm" min="-2" pref="109" max="-2" attributes="0"/>
+                                          <Component id="inputPassConfirmAV" min="-2" pref="109" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
                               <EmptySpace pref="82" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="btnDoctorView" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnDoctorViewAV" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                                      <Component id="inputSelectDoctor" min="-2" max="-2" attributes="0"/>
+                                      <Component id="inputSelectDoctorAV" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
-                                      <Component id="labelDoctor" min="-2" max="-2" attributes="0"/>
+                                      <Component id="labelDoctorAV" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnLogoutAV" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="318" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -206,16 +206,16 @@
                           <Group type="102" attributes="0">
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="btnPatientView" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnPatientViewAV" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
-                                      <Component id="inputSelectPatient" min="-2" max="-2" attributes="0"/>
+                                      <Component id="inputSelectPatientAV" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
-                              <Component id="labelPatient" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelPatientAV" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="88" max="-2" attributes="0"/>
@@ -238,66 +238,66 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="labelFirstName" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="inputFirstname" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="labelLastname" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="inputLastname" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="labelID" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="inputID" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelFirstNameAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="inputFirstnameAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelLastnameAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="inputLastnameAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelIDAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="inputIDAV" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="labelSpecialty" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="inputSelectSpecialty" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="labelLicense" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="inputLicense" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelSpecialtyAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="inputSelectSpecialtyAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelLicenseAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="inputLicenseAV" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="labelAssignedOffice" min="-2" max="-2" attributes="0"/>
-                          <Component id="inputAssignedOffice" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelAssignedOfficeAV" min="-2" max="-2" attributes="0"/>
+                          <Component id="inputAssignedOfficeAV" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="labelUser" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="inputUser" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelUserAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="inputUserAV" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="labelPass" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="inputPass" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelPassAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="inputPassAV" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="labelPassConfirm" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="inputPassConfirm" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelPassConfirmAV" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="inputPassConfirmAV" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-                              <Component id="labelDoctor" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelDoctorAV" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="inputSelectDoctor" min="-2" max="-2" attributes="0"/>
+                              <Component id="inputSelectDoctorAV" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="43" pref="43" max="-2" attributes="0"/>
-                              <Component id="btnDoctorView" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnDoctorViewAV" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="80" max="32767" attributes="0"/>
-                      <Component id="btnSave" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="86" max="32767" attributes="0"/>
+                      <Component id="btnSaveAV" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="123" max="-2" attributes="0"/>
-                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnLogoutAV" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="203" max="-2" attributes="0"/>
-                      <Component id="labelPatient" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelPatientAV" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="inputSelectPatient" min="-2" max="-2" attributes="0"/>
+                      <Component id="inputSelectPatientAV" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="43" pref="43" max="-2" attributes="0"/>
-                      <Component id="btnPatientView" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="btnPatientViewAV" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="336" max="32767" attributes="0"/>
                   </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
@@ -310,7 +310,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JButton" name="btnDoctorView">
+            <Component class="javax.swing.JButton" name="btnDoctorViewAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="1"/>
@@ -318,10 +318,10 @@
                 <Property name="text" type="java.lang.String" value="DOCTOR VIEW"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDoctorViewActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDoctorViewAVActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="btnPatientView">
+            <Component class="javax.swing.JButton" name="btnPatientViewAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="1"/>
@@ -329,10 +329,10 @@
                 <Property name="text" type="java.lang.String" value="PATIENT VIEW"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPatientViewActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPatientViewAVActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelFirstName">
+            <Component class="javax.swing.JLabel" name="labelFirstNameAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -340,14 +340,14 @@
                 <Property name="text" type="java.lang.String" value="Firstname"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="inputFirstname">
+            <Component class="javax.swing.JTextField" name="inputFirstnameAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelLastname">
+            <Component class="javax.swing.JLabel" name="labelLastnameAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -355,14 +355,14 @@
                 <Property name="text" type="java.lang.String" value="Lastname"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="inputLastname">
+            <Component class="javax.swing.JTextField" name="inputLastnameAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelID">
+            <Component class="javax.swing.JLabel" name="labelIDAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -370,14 +370,14 @@
                 <Property name="text" type="java.lang.String" value="ID"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="inputID">
+            <Component class="javax.swing.JTextField" name="inputIDAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelSpecialty">
+            <Component class="javax.swing.JLabel" name="labelSpecialtyAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -385,7 +385,7 @@
                 <Property name="text" type="java.lang.String" value="Specialty"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelLicense">
+            <Component class="javax.swing.JLabel" name="labelLicenseAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -393,14 +393,14 @@
                 <Property name="text" type="java.lang.String" value="License Number"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="inputLicense">
+            <Component class="javax.swing.JTextField" name="inputLicenseAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelAssignedOffice">
+            <Component class="javax.swing.JLabel" name="labelAssignedOfficeAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -408,14 +408,14 @@
                 <Property name="text" type="java.lang.String" value="Assigned office"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="inputAssignedOffice">
+            <Component class="javax.swing.JTextField" name="inputAssignedOfficeAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelUser">
+            <Component class="javax.swing.JLabel" name="labelUserAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -423,14 +423,14 @@
                 <Property name="text" type="java.lang.String" value="User"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="inputUser">
+            <Component class="javax.swing.JTextField" name="inputUserAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelPass">
+            <Component class="javax.swing.JLabel" name="labelPassAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -438,14 +438,14 @@
                 <Property name="text" type="java.lang.String" value="Password"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="inputPass">
+            <Component class="javax.swing.JTextField" name="inputPassAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelPassConfirm">
+            <Component class="javax.swing.JLabel" name="labelPassConfirmAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -453,14 +453,14 @@
                 <Property name="text" type="java.lang.String" value="Password confirmation"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="inputPassConfirm">
+            <Component class="javax.swing.JTextField" name="inputPassConfirmAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JComboBox" name="inputSelectSpecialty">
+            <Component class="javax.swing.JComboBox" name="inputSelectSpecialtyAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -486,7 +486,7 @@
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
-            <Component class="javax.swing.JButton" name="btnSave">
+            <Component class="javax.swing.JButton" name="btnSaveAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -494,7 +494,7 @@
                 <Property name="text" type="java.lang.String" value="Save"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSaveActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSaveAVActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JSeparator" name="jSeparator1">
@@ -502,7 +502,7 @@
                 <Property name="orientation" type="int" value="1"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JComboBox" name="inputSelectDoctor">
+            <Component class="javax.swing.JComboBox" name="inputSelectDoctorAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -517,7 +517,7 @@
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelDoctor">
+            <Component class="javax.swing.JLabel" name="labelDoctorAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -525,7 +525,7 @@
                 <Property name="text" type="java.lang.String" value="Doctor"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="labelPatient">
+            <Component class="javax.swing.JLabel" name="labelPatientAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -533,7 +533,7 @@
                 <Property name="text" type="java.lang.String" value="Patient"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JComboBox" name="inputSelectPatient">
+            <Component class="javax.swing.JComboBox" name="inputSelectPatientAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -553,7 +553,7 @@
                 <Property name="orientation" type="int" value="1"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="btnLogout">
+            <Component class="javax.swing.JButton" name="btnLogoutAV">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Yu Gothic UI" size="18" style="0"/>
@@ -561,7 +561,7 @@
                 <Property name="text" type="java.lang.String" value="Logout"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLogoutActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLogoutAVActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
