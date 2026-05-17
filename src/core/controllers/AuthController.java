@@ -4,7 +4,7 @@
  */
 package core.controllers;
 
-import core.model.Storage;
+import core.model.UserStorage;
 import core.model.User;
 
 /**
@@ -13,10 +13,10 @@ import core.model.User;
  */
 public class AuthController {
 
-    static private Storage storage = Storage.getInstance();
+    static private UserStorage storage = UserStorage.getInstance();
 
     static boolean loginUser(String username, String password) {
-        User user = storage.getUser(username);
+        User user = storage.get(username);
         if (user == null) {
             return false;
         }

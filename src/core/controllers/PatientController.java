@@ -4,7 +4,7 @@
  */
 package core.controllers;
 
-import core.model.Storage;
+import core.model.UserStorage;
 
 /**
  *
@@ -12,7 +12,7 @@ import core.model.Storage;
  */
 public class PatientController {
 
-    static private Storage storage = Storage.getInstance();
+    static private UserStorage storage = UserStorage.getInstance();
 
     static boolean registerPatient(long id, String username, String fname,
             String lname, String password, String email, String birthdate,
