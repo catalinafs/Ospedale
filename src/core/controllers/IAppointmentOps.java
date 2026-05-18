@@ -1,0 +1,36 @@
+package core.controllers;
+
+
+import core.controllers.utils.Response;
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+
+/**
+ *
+ * @author daniel
+ */
+public interface IAppointmentOps {
+    public Response requestAppointment(
+        long patientId,
+        String date,
+        String time,
+        String type,
+        String reason,
+        String doctorOrSpecialty,
+        boolean isSpecialty
+    );
+    
+    public Response acceptAppointment(String appointmentId, long doctorId);
+    public Response completeAppointment(String appointmentId, long doctorId);
+    public Response cancelAppointment(String appointmentId, long patientId);
+    
+    public Response rescheduleAppointment(
+        String appointmentId,
+        long doctorId,
+        String newTime,
+        String reason
+    );
+}

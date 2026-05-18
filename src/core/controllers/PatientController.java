@@ -6,8 +6,10 @@ package core.controllers;
 
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
+import core.model.IPatientStorage;
+import core.model.IUserStorage;
 import core.model.Patient;
-import core.model.Storage;
+import core.model.UserStorage;
 import java.time.LocalDate;
 
 /**
@@ -16,7 +18,9 @@ import java.time.LocalDate;
  */
 public class PatientController {
 
-    static private Storage storage = Storage.getInstance();
+    //Son el mismo objeto en memoria pero nos referimos a el 
+    //a través de dos interfaces que implementa;
+    static private IPatientStorage storage = UserStorage.getInstance();
 
     static Response registerPatient(long id, String username, String fname,
             String lname, String password, String passwordConfirm, String email, LocalDate birthdate,
@@ -26,7 +30,7 @@ public class PatientController {
             return new Response("Every field should be filled in.", Status.BAD_REQUEST);
         }
 
-        if (storage.getUserById(id) != null) {
+        if (storage.get(id) != null) {
             return new Response("Patient id already exists.", Status.CONFLICT);
         }
 
@@ -40,7 +44,7 @@ public class PatientController {
         
         // TODO: validar email y birthdate
 
-        if (storage.getUserByUsername(username) != null) {
+        if (storage.get(username) != null) {
             return new Response("Patient username already exists.", Status.CONFLICT);
         }
 
@@ -49,7 +53,7 @@ public class PatientController {
         }
 
         var user = new Patient(id, username, fname, lname, password, email, birthdate, gender, phone, address);
-        if (!storage.addUser(user)) {
+        if (!storage.add(user)) {
             return new Response("Patient id already exists.", Status.CONFLICT);
         }
 
@@ -69,7 +73,7 @@ public class PatientController {
         }
 
         // TODO: validar email y birthdate
-        if (storage.getUserByUsername(username) != null) {
+        if (storage.get(username) != null) {
             return new Response("Patient username already exists.", Status.CONFLICT);
         }
 
