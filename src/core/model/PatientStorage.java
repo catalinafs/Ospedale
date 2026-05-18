@@ -13,13 +13,15 @@ import java.util.ArrayList;
  */
 public class PatientStorage implements IPatientStorage{
     private static PatientStorage instance = null;
-    private static IUserStorage userStorage = UserStorage.getInstance();
+    private final IUserStorage userStorage;
     
-    private PatientStorage() {}
+    private PatientStorage(IUserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
     
-    public static PatientStorage getInstance() {
+    public static PatientStorage getInstance(IUserStorage userStorage) {
         if (instance == null) {
-            instance = new PatientStorage();
+            instance = new PatientStorage(userStorage);
         }
         return instance;
     }

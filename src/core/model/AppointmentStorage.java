@@ -5,6 +5,8 @@ import core.model.Appointment;
 import core.model.Doctor;
 import core.model.IAppointmentStorage;
 import core.model.Specialty;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,14 +21,17 @@ import java.util.HashMap;
  */
 public class AppointmentStorage implements IAppointmentStorage{
     private static AppointmentStorage instance = null;
-    private static ArrayList<Appointment> appointments = new ArrayList<>();
-    private static HashMap<Long, Integer> counters = new HashMap<>();
+    private final IDoctorStorage doctorStorage;
+    private ArrayList<Appointment> appointments = new ArrayList<>();
+    private HashMap<Long, Integer> counters = new HashMap<>();
     
-    private AppointmentStorage() {}
+    private AppointmentStorage(IDoctorStorage doctorStorage) {
+        this.doctorStorage = doctorStorage;
+    }
     
-    public static AppointmentStorage getInstance() {
+    public static AppointmentStorage getInstance(IDoctorStorage doctorStorage) {
         if (instance == null) {
-            instance = new AppointmentStorage();
+            instance = new AppointmentStorage(doctorStorage);
         }
         return instance;
     }
@@ -48,12 +53,19 @@ public class AppointmentStorage implements IAppointmentStorage{
     
     @Override
     public boolean isDoctorAvailable(long doctorId, String date, String time) {
+        LocalTime newTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime newEndTime = newTime.plusMinutes(15);
+
         for (Appointment a : appointments) {
             if (a.getDoctor().getId() == doctorId) {
                 String aDate = a.getDatetime().toLocalDate().toString();
-                String aTime = a.getDatetime().toLocalTime().toString().substring(0, 5);
-                if (aDate.equals(date) && aTime.equals(time)) {
-                    return false;
+                if (aDate.equals(date)) {
+                    LocalTime existingStart = a.getDatetime().toLocalTime();
+                    LocalTime existingEnd = existingStart.plusMinutes(15);
+
+                    if (!(newEndTime.isBefore(existingStart) || newTime.isAfter(existingEnd))) {
+                        return false;
+                    }
                 }
             }
         }
@@ -70,7 +82,7 @@ public class AppointmentStorage implements IAppointmentStorage{
     
     @Override
     public Doctor findAvailableDoctor(Specialty specialty, String date, String time) {
-        for (Doctor doctor : DoctorStorage.getInstance().getAllDoctors()) {
+        for (Doctor doctor : doctorStorage.getAllDoctors()) {
             if (doctor.getSpecialty() == specialty && isDoctorAvailable(doctor.getId(), date, time)) {
                 return doctor;
             }

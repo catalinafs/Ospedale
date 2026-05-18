@@ -59,6 +59,11 @@ public class AuthController implements IAuthController{
             data.put("specialty", ((Doctor)user).getSpecialty().toString());
         } else if (user instanceof Patient) {
             data.put("type", "patient");
+            data.put("gender", ((Patient)user).isGender());
+            data.put("email", ((Patient)user).getEmail());
+            data.put("birthdate", ((Patient)user).getBirthdate().toString());
+            data.put("phone", ((Patient)user).getPhone());
+            data.put("address", ((Patient)user).getAddress());
         }
 
         return new Response("Login successful.", Status.OK, data);

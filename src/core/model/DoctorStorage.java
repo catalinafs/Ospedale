@@ -12,13 +12,15 @@ import java.util.ArrayList;
  */
 public class DoctorStorage implements IDoctorStorage{
     private static DoctorStorage instance = null;
-    private static IUserStorage userStorage = UserStorage.getInstance();
+    private final IUserStorage userStorage;
     
-    private DoctorStorage() {}
+    private DoctorStorage(IUserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
     
-    public static DoctorStorage getInstance() {
+    public static DoctorStorage getInstance(IUserStorage userStorage) {
         if (instance == null) {
-            instance = new DoctorStorage();
+            instance = new DoctorStorage(userStorage);
         }
         return instance;
     }
