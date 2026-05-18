@@ -31,7 +31,16 @@ public class UserPersistence implements IUserPersistence{
     public void load(IUserStorage storage) {
         String content = fileHandler.read(filePath);
         if (content == null || content.isEmpty()) return;
-        JSONArray jsonArray = new JSONArray(content);
+        
+        JSONArray jsonArray;
+        // Check if content starts with "{" (object) or "[" (array)
+        if (content.trim().startsWith("{")) {
+            JSONObject jsonObject = new JSONObject(content);
+            jsonArray = jsonObject.getJSONArray("users");
+        } else {
+            jsonArray = new JSONArray(content);
+        }
+        
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject json = jsonArray.getJSONObject(i);
             User user = deserializer.deserialize(json);

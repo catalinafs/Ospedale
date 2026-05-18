@@ -68,6 +68,10 @@ public class Appointment {
         this.status = status;
     }
 
+    public void setDatetime(LocalDateTime datetime) {
+        this.datetime = datetime;
+    }
+
     public String getId() {
         return id;
     }
