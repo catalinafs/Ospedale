@@ -809,9 +809,9 @@ public class PatientView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSavePVActionPerformed
 
     private void btnLogoutPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutPVActionPerformed
-        MainView login = new MainView();
+        //MainView login = new MainView();
         this.setVisible(false);
-        login.setVisible(true);
+        //login.setVisible(true);
     }//GEN-LAST:event_btnLogoutPVActionPerformed
 
     private void btnBackPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackPVActionPerformed

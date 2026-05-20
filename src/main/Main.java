@@ -2,7 +2,11 @@ package main;
 
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import core.controllers.PatientController;
+import core.controllers.validators.PatientValidator;
+import core.model.PatientStorage;
 import core.model.UserStorage;
+import core.controllers.AuthController;
 import core.model.persistence.AdminDeserializer;
 import core.model.persistence.AdminSerializer;
 import core.model.persistence.DoctorDeserializer;
@@ -42,6 +46,10 @@ public class Main {
         persistence.load(UserStorage.getInstance());
         
         System.setProperty("flatlaf.useNativeLibrary", "false");
+        
+        var patientValidator = new PatientValidator();
+        var authController = new AuthController(UserStorage.getInstance());
+        var patientController = new PatientController(PatientStorage.getInstance(UserStorage.getInstance()), patientValidator);
 
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -51,7 +59,7 @@ public class Main {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainView().setVisible(true);
+                new MainView(patientController, authController).setVisible(true);
             }
         });
     }

@@ -1,6 +1,9 @@
 package core.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import core.controllers.AuthController;
+import core.controllers.PatientController;
+import core.controllers.utils.Response;
 import core.model.Administrator;
 import core.model.Appointment;
 import core.model.Doctor;
@@ -9,24 +12,22 @@ import core.model.Patient;
 import core.model.User;
 import java.awt.Color;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
-import javax.swing.UIManager;
 
 public class MainView extends javax.swing.JFrame {
 
     private int x, y;
-    private ArrayList<User> users;
-    private ArrayList<Hospitalization> hospitalizations;
-    private ArrayList<Appointment> appointments;
 
-    public MainView() {
+    private PatientController patientController;
+    private AuthController authController;
+
+    public MainView(PatientController patientController, AuthController authController) {
         initComponents();
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
 
-        this.users = new ArrayList<>();
-        this.users.add(new Administrator(0, "admin", "admin", "adnim", "admin123"));
+        this.patientController = patientController;
+        this.authController = authController;
     }
 
     @SuppressWarnings("unchecked")
@@ -406,50 +407,34 @@ public class MainView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExitMVActionPerformed
 
     private void btnEnterMVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnterMVActionPerformed
-        // TODO add your handling code here:
-        User selectedUser = null;
-        for (User user : this.users) {
-            if (inputUserMV.getText().equals(user.getUsername())) {
-                selectedUser = user;
-                if (selectedUser.getPassword().equals(inputPassMV.getText())) {
-                    if (selectedUser instanceof Administrator ) {
-                        AdminView admin = new AdminView(selectedUser,users,hospitalizations, appointments);
-                        this.setVisible(false);
-                        admin.setVisible(true);
-                    }
-                    else if (selectedUser instanceof Doctor ) {
-                        DoctorView doctor = new DoctorView(selectedUser,(Doctor)selectedUser,users,hospitalizations,appointments);
-                        this.setVisible(false);
-                        doctor.setVisible(true);
-                    }
-                    else {
-                        PatientView patient = new PatientView(selectedUser,(Patient) selectedUser,users,appointments, hospitalizations);
-                        this.setVisible(false);
-                        patient.setVisible(true);
-                    }
-                }
-            }
+        String psswd = inputPassMV.getText();
+        String user = inputUserMV.getText();
+        Response res = authController.login(user, psswd);
+        if (res.getStatus() == 201) {
+            System.out.println("SHEEEEEEEEESH");
+        } else {
+            System.out.println(res.getMessage());
         }
-
     }//GEN-LAST:event_btnEnterMVActionPerformed
 
     private void btnSaveRegisMVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveRegisMVActionPerformed
         String firstname = inputFisrtnameMV.getText();
         String lastname = inputLastnameMV.getText();
-        long id = Long.parseLong(inputIDMV.getText());
-        boolean gender = (inputSelectGenderMV.getSelectedIndex() == 0 ? null : (inputSelectGenderMV.getSelectedIndex() == 1 ));
+        String id = inputIDMV.getText();
+        int gender = inputSelectGenderMV.getSelectedIndex();
         String birth = inputBirthdateMV.getText();
         String address = inputAddressMV.getText();
-        long phone = Long.parseLong(inputPhoneMV.getText());
+        String phone = inputPhoneMV.getText();
         String email = inputEmailMV.getText();
         String user = inputUserRegisMV.getText();
         String password = inputPassRegisMV.getText();
         String comPassword = inputPassConfirRegisMV.getText();
-        LocalDate birthdate = LocalDate.of(Integer.parseInt(birth.substring(0, 4)), Integer.parseInt(birth.substring(5, 7)), Integer.parseInt(birth.substring(8)));
-        if (comPassword.equals(password)) {
-            users.add(new Patient(id, user, firstname, lastname, password, email, birthdate, gender, phone, address));
+        Response res = patientController.register(id, user, firstname, lastname, password, comPassword, email, birth, gender, phone, address);
+        if (res.getStatus() == 201) {
+            System.out.println("SHEEEEEEEEESH");
+        } else {
+            System.out.println(res.getMessage());
         }
-        
     }//GEN-LAST:event_btnSaveRegisMVActionPerformed
 
     private void inputPassConfirRegisMVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputPassConfirRegisMVActionPerformed
@@ -459,7 +444,6 @@ public class MainView extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    
     /* Lo comento para cambiar el main y mantengo este por si acaso
     public static void main(String args[]) {
         System.setProperty("flatlaf.useNativeLibrary", "false");

@@ -1167,9 +1167,9 @@ public class DoctorView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSavedModifyDVActionPerformed
 
     private void btnLogoutDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutDVActionPerformed
-        MainView login = new MainView();
+        //MainView login = new MainView();
         this.setVisible(false);
-        login.setVisible(true);
+        //login.setVisible(true);
     }//GEN-LAST:event_btnLogoutDVActionPerformed
 
     private void btnBackDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackDVActionPerformed

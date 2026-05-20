@@ -13,5 +13,5 @@ import core.controllers.utils.Response;
 public interface IUserValidator {
     public Response validateUsername(String username);
     public Response validatePassword(String password, String passwordConfirm);
-    public Response validateId(long id);
+    public Response validateId(String id);
 }

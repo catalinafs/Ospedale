@@ -11,7 +11,8 @@ import core.controllers.utils.Response;
  * @author daniel
  */
 public interface IPatientValidator extends IUserValidator{
-    public Response validatePhone(long phone);
+    public Response validatePhone(String phone);
     public Response validateEmail(String email);
     public Response validateBirthdate(String birthdate);
+    public Response validateGender(int gender);
 }   

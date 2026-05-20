@@ -6,7 +6,6 @@ package core.controllers;
 
 import core.controllers.utils.Status;
 import core.controllers.utils.Response;
-import core.controllers.validators.IUserValidator;
 import core.model.Administrator;
 import core.model.Doctor;
 import core.model.IUserStorage;
@@ -20,11 +19,9 @@ import java.util.HashMap;
  */
 public class AuthController implements IAuthController{
     private final IUserStorage storage;
-    private final IUserValidator validator;
     
-    public AuthController(IUserStorage storage, IUserValidator validator) {
+    public AuthController(IUserStorage storage) {
         this.storage = storage;
-        this.validator = validator;
     }
     
     @Override
@@ -65,7 +62,7 @@ public class AuthController implements IAuthController{
             data.put("phone", ((Patient)user).getPhone());
             data.put("address", ((Patient)user).getAddress());
         }
-
+    
         return new Response("Login successful.", Status.OK, data);
     }
     

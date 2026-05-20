@@ -71,10 +71,15 @@ public class DoctorValidator implements IDoctorValidator{
     }
     
     @Override
-    public Response validateId(long id){
-        if(id <= 0 || id > 999999999999L){
-            return new Response("ID muste be greater than 0 and have 12 digits.", Status.BAD_REQUEST);
+    public Response validateId(String id_str) {
+        if (id_str == null || id_str.trim().isEmpty()) {
+            return new Response("ID is required.", Status.BAD_REQUEST);
         }
+
+        if (!id_str.trim().matches("\\d{12}")) {
+            return new Response("ID must be exactly 12 digits.", Status.BAD_REQUEST);
+        }
+
         return null;
     }
 }
