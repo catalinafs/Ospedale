@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package core.controllers;
 
 import core.controllers.utils.Response;
@@ -9,14 +5,9 @@ import core.controllers.utils.Status;
 import core.controllers.validators.IPatientValidator;
 import core.model.IPatientStorage;
 import core.model.Patient;
-import core.model.PatientStorage;
 import java.time.LocalDate;
 import java.util.HashMap;
 
-/**
- *
- * @author briggoes
- */
 public class PatientController implements IPatientController{
     private final IPatientStorage storage;
     private final IPatientValidator validator;
