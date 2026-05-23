@@ -28,7 +28,7 @@ public interface IPatientController {
     );
 
     public Response update(
-            String id,
+            long id,
             String username,
             String firstname,
             String lastname,

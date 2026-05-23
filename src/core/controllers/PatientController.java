@@ -23,21 +23,30 @@ public class PatientController implements IPatientController {
             String lastname, String password, String passwordConfirm, String email,
             String birth, int gender_ind, String phone_str, String address) {
         try {
+            if (firstname == null || firstname.trim().isEmpty()) {
+                return new Response("Firstname is required.", Status.BAD_REQUEST);
+            }
+            if (lastname == null || lastname.trim().isEmpty()) {
+                return new Response("Lastname is required.", Status.BAD_REQUEST);
+            }
             Response error = validator.validateId(id_str);
             if (error != null) {
                 return error;
+            }
+            long id = Long.parseLong(id_str);
+            if (storage.getPatient(id) != null) {
+                return new Response("Patient id already exists.", Status.CONFLICT);
             }
             error = validator.validateGender(gender_ind);
             if (error != null) {
                 return error;
             }
-            error = validator.validateUsername(username);
+            error = validator.validateBirthdate(birth);
             if (error != null) {
                 return error;
             }
-            error = validator.validatePassword(password, passwordConfirm);
-            if (error != null) {
-                return error;
+            if (address == null || address.trim().isEmpty()) {
+                return new Response("Address is required.", Status.BAD_REQUEST);
             }
             error = validator.validatePhone(phone_str);
             if (error != null) {
@@ -47,31 +56,22 @@ public class PatientController implements IPatientController {
             if (error != null) {
                 return error;
             }
-            error = validator.validateBirthdate(birth);
+            error = validator.validateUsername(username);
             if (error != null) {
                 return error;
-            }
-            
-            boolean gender = (gender_ind == 1);
-            long id = Long.parseLong(id_str);
-            long phone = Long.parseLong(phone_str);
-            LocalDate birthdate = LocalDate.of(Integer.parseInt(birth.substring(0, 4)), Integer.parseInt(birth.substring(5, 7)), Integer.parseInt(birth.substring(8)));
-
-            if (firstname == null || firstname.trim().isEmpty()) {
-                return new Response("Firstname is required.", Status.BAD_REQUEST);
-            }
-            if (lastname == null || lastname.trim().isEmpty()) {
-                return new Response("Lastname is required.", Status.BAD_REQUEST);
-            }
-            if (address == null || address.trim().isEmpty()) {
-                return new Response("Address is required.", Status.BAD_REQUEST);
-            }
-            if (storage.getPatient(id) != null) {
-                return new Response("Patient id already exists.", Status.CONFLICT);
             }
             if (storage.getPatientByUsername(username) != null) {
                 return new Response("Patient username already exists.", Status.CONFLICT);
             }
+            error = validator.validatePassword(password, passwordConfirm);
+            if (error != null) {
+                return error;
+            }
+
+            boolean gender = (gender_ind == 1);
+            long phone = Long.parseLong(phone_str);
+            LocalDate birthdate = LocalDate.of(Integer.parseInt(birth.substring(0, 4)), Integer.parseInt(birth.substring(5, 7)), Integer.parseInt(birth.substring(8)));
+
             Patient patient = new Patient(id, username, firstname, lastname, password,
                     email, birthdate, gender, phone, address);
 
@@ -90,72 +90,116 @@ public class PatientController implements IPatientController {
     }
 
     @Override
-    public Response update(String id_str, String username, String firstname,
+    public Response update(long id, String username, String firstname,
             String lastname, String password, String passwordConfirm, String email,
             String birth, int gender_ind, String phone_str, String address) {
-        Response error = validator.validateId(id_str);
-        if (error != null) {
-            return error;
-        }
-
-        long id = Long.parseLong(id_str);
-
-        Patient existingPatient = storage.getPatient(id);
-        if (existingPatient == null) {
-            return new Response("Patient not found.", Status.NOT_FOUND);
-        }
-
-                    error = validator.validateGender(gender_ind);
-            if (error != null) {
-                return error;
+        try {
+            Patient existing = storage.getPatient(id);
+            if (existing == null) {
+                return new Response("Patient not found.", Status.NOT_FOUND);
             }
-        
-        error = validator.validateUsername(username);
-        if (error != null) {
-            return error;
-        }
-        error = validator.validatePassword(password, passwordConfirm);
-        if (error != null) {
-            return error;
-        }
-        error = validator.validatePhone(phone_str);
-        if (error != null) {
-            return error;
-        }
-        error = validator.validateEmail(email);
-        if (error != null) {
-            return error;
-        }
-        error = validator.validateBirthdate(birth);
-        if (error != null) {
-            return error;
-        }
-        
-        boolean gender = (gender_ind == 1);
-        long phone = Long.parseLong(phone_str);
-        LocalDate birthdate = LocalDate.of(Integer.parseInt(birth.substring(0, 4)), Integer.parseInt(birth.substring(5, 7)), Integer.parseInt(birth.substring(8)));
 
-        if (firstname == null || firstname.trim().isEmpty()) {
-            return new Response("Firstname is required.", Status.BAD_REQUEST);
+            Response error;
+
+            if (hasText(username)) {
+                error = validator.validateUsername(username);
+                if (error != null) {
+                    return error;
+                }
+                Patient other = storage.getPatientByUsername(username.trim());
+                if (other != null && other.getId() != id) {
+                    return new Response("Patient username already exists.", Status.CONFLICT);
+                }
+            }
+
+            if (hasText(email)) {
+                error = validator.validateEmail(email);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            if (hasText(phone_str)) {
+                error = validator.validatePhone(phone_str);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            if (hasText(birth)) {
+                error = validator.validateBirthdate(birth);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            if (gender_ind != 0) {
+                error = validator.validateGender(gender_ind);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            boolean passwordProvided = hasText(password);
+            boolean confirmProvided = hasText(passwordConfirm);
+            if (passwordProvided != confirmProvided) {
+                return new Response(
+                        "Password and confirmation must both be provided to change the password.",
+                        Status.BAD_REQUEST);
+            }
+            if (passwordProvided) {
+                error = validator.validatePassword(password, passwordConfirm);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            LocalDate birthdate = null;
+            if (hasText(birth)) {
+                birthdate = LocalDate.of(
+                        Integer.parseInt(birth.substring(0, 4)),
+                        Integer.parseInt(birth.substring(5, 7)),
+                        Integer.parseInt(birth.substring(8)));
+            }
+
+            Boolean gender = null;
+            if (gender_ind != 0) {
+                gender = (gender_ind == 1);
+            }
+
+            Long phone = null;
+            if (hasText(phone_str)) {
+                phone = Long.parseLong(phone_str.trim());
+            }
+
+            if (!storage.updatePatient(
+                    id,
+                    username,
+                    firstname,
+                    lastname,
+                    passwordProvided ? password : null,
+                    email,
+                    birthdate,
+                    gender,
+                    phone,
+                    address)) {
+                return new Response("Patient not found.", Status.NOT_FOUND);
+            }
+
+            Patient updated = storage.getPatient(id);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("id", id);
+            data.put("username", updated.getUsername());
+            data.put("firstname", updated.getFirstname());
+            data.put("lastname", updated.getLastname());
+            return new Response("Update successful.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }
-        if (lastname == null || lastname.trim().isEmpty()) {
-            return new Response("Lastname is required.", Status.BAD_REQUEST);
-        }
-        if (address == null || address.trim().isEmpty()) {
-            return new Response("Address is required.", Status.BAD_REQUEST);
-        }
-        Patient patientWithUsername = storage.getPatientByUsername(username);
-        if (patientWithUsername != null && patientWithUsername.getId() != id) {
-            return new Response("Patient username already exists.", Status.CONFLICT);
-        }
-        if (!storage.updatePatient(id, username, firstname, lastname, password,
-                email, birthdate, gender, phone, address)) {
-            return new Response("Patient not found.", Status.NOT_FOUND);
-        }
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("id", id);
-        data.put("username", username);
-        return new Response("Update successful.", Status.OK, data);
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.trim().isEmpty();
     }
 
     @Override
