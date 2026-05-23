@@ -1,44 +1,42 @@
 package core.view;
 
+import core.app.Navigator;
+import core.controllers.AppointmentController;
+import core.controllers.PatientController;
+import core.controllers.utils.Response;
+import core.controllers.utils.Status;
 import core.model.Administrator;
-import core.model.Appointment;
-import core.model.AppointmentStatus;
-import core.model.Doctor;
-import core.model.Hospitalization;
 import core.model.Patient;
-import core.model.RoomType;
-import core.model.Specialty;
 import core.model.User;
 import java.awt.Color;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
 
 public class PatientView extends javax.swing.JFrame {
 
     private int x, y;
     private User user;
-    private ArrayList<User> users;
     private Patient patient;
-    private ArrayList<Appointment> appointments;
-    private ArrayList<Hospitalization> hospitalizations;
+    private Navigator navigator;
+    private PatientController patientController;
+    private AppointmentController appointmentController;
 
-    public PatientView(User user,Patient patient, ArrayList<User> users, ArrayList<Appointment>appointments, ArrayList<Hospitalization> hospitalizations) {
+    public PatientView(User user, Patient patient, PatientController patientController, AppointmentController appointmentController, Navigator navigator) {
         initComponents();
         this.user = user;
-        this.users = users;
         this.patient = patient;
-        this.hospitalizations = hospitalizations;
-        this.appointments = appointments;
+        this.patientController = patientController;
+        this.appointmentController = appointmentController;
+        this.navigator = navigator;
+
         if (user instanceof Administrator) {
             btnBackPV.setVisible(true);
         } else {
             btnBackPV.setVisible(false);
         }
+
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -769,128 +767,110 @@ public class PatientView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExtiPVActionPerformed
 
     private void btnCancelAppointPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelAppointPVActionPerformed
-        String idAppointment = inputSelectIDappointPV.getItemAt(inputSelectIDappointPV.getSelectedIndex());
-        for(Appointment ap: this.appointments){
-            if (ap.getId().equals(idAppointment)) {
-                ap.setStatus(AppointmentStatus.CANCELED);
-            }
-        }
+//        String idAppointment = inputSelectIDappointPV.getItemAt(inputSelectIDappointPV.getSelectedIndex());
+//        for (Appointment ap : this.appointments) {
+//            if (ap.getId().equals(idAppointment)) {
+//                ap.setStatus(AppointmentStatus.CANCELED);
+//            }
+//        }
     }//GEN-LAST:event_btnCancelAppointPVActionPerformed
 
     private void btnSavePVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePVActionPerformed
         String firstname = inputFisrtnamePV.getText();
         String lastname = inputLastnamePV.getText();
-        boolean gender = (inputSelectGenderPV.getSelectedIndex() == 0 ? null : (inputSelectGenderPV.getSelectedIndex() == 1));
+        int gender = inputSelectGenderPV.getSelectedIndex();
         String birth = inputBirthPV.getText();
         String address = inputAddressPV.getText();
-        long phone = Long.parseLong(inputPhonePV.getText());
+        String phone = inputPhonePV.getText();
         String email = inputEmailPV.getText();
         String username = inputUserPV.getText();
         String password = inputPassPV.getText();
         String comPassword = inputPassConfirPV.getText();
-        LocalDate birthdate = LocalDate.of(Integer.parseInt(birth.substring(0, 4)), Integer.parseInt(birth.substring(5, 7)), Integer.parseInt(birth.substring(8)));
-        if (comPassword.equals(password)) {
-            for (User user : this.users) {
-                if (user.getId() == this.user.getId() && user instanceof Patient) {
-                    Patient userTemp = (Patient) user;
-                    userTemp.setAddress(address);
-                    userTemp.setBirthdate(birthdate);
-                    userTemp.setEmail(email);
-                    userTemp.setFirstname(firstname);
-                    userTemp.setGender(gender);
-                    userTemp.setLastname(lastname);
-                    userTemp.setPassword(password);
-                    userTemp.setPhone(phone);
-                    userTemp.setUsername(username);
-                }
-            }
+        Response res = patientController.update(user.getId(), username, firstname, lastname, password, comPassword, email, birth, gender, phone, address);
+        if (res.getStatus() == Status.OK) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
-
     }//GEN-LAST:event_btnSavePVActionPerformed
 
     private void btnLogoutPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutPVActionPerformed
-        //MainView login = new MainView();
-        this.setVisible(false);
-        //login.setVisible(true);
+        navigator.logout();
     }//GEN-LAST:event_btnLogoutPVActionPerformed
 
     private void btnBackPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackPVActionPerformed
-        AdminView admin = new AdminView(user, users,hospitalizations, appointments);
-        this.setVisible(false);
-        admin.setVisible(true);
+        navigator.showAdmin(user);
     }//GEN-LAST:event_btnBackPVActionPerformed
 
     private void btnRadioSpecialtyPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRadioSpecialtyPVActionPerformed
-        if (btnRadioDoctorPV.isSelected()) {
-            btnRadioDoctorPV.setSelected(false);
-        }
-
-        inputSelectRequestPV.removeAllItems();
-
-        inputSelectRequestPV.addItem("Select one");
-        for (Specialty spec : Specialty.values()) {
-            inputSelectRequestPV.addItem(spec.toString().replaceAll("_", " & "));
-        }
+//        if (btnRadioDoctorPV.isSelected()) {
+//            btnRadioDoctorPV.setSelected(false);
+//        }
+//
+//        inputSelectRequestPV.removeAllItems();
+//
+//        inputSelectRequestPV.addItem("Select one");
+//        for (Specialty spec : Specialty.values()) {
+//            inputSelectRequestPV.addItem(spec.toString().replaceAll("_", " & "));
+//        }
     }//GEN-LAST:event_btnRadioSpecialtyPVActionPerformed
 
     private void btnRadioDoctorPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRadioDoctorPVActionPerformed
-        if (btnRadioSpecialtyPV.isSelected()) {
-            btnRadioSpecialtyPV.setSelected(false);
-        }
-        inputSelectRequestPV.removeAllItems();
-
-        inputSelectRequestPV.addItem("Select one");
-        for (User doc : this.users) {
-            if (doc instanceof Doctor) {
-                inputSelectRequestPV.addItem(doc.getFirstname() + " " + doc.getLastname());
-            }
-        }
+//        if (btnRadioSpecialtyPV.isSelected()) {
+//            btnRadioSpecialtyPV.setSelected(false);
+//        }
+//        inputSelectRequestPV.removeAllItems();
+//
+//        inputSelectRequestPV.addItem("Select one");
+//        for (User doc : this.users) {
+//            if (doc instanceof Doctor) {
+//                inputSelectRequestPV.addItem(doc.getFirstname() + " " + doc.getLastname());
+//            }
+//        }
     }//GEN-LAST:event_btnRadioDoctorPVActionPerformed
 
     private void btnCreateRequestMediPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateRequestMediPVActionPerformed
-        String appointDate = inputAppointDatePV.getText();
-        LocalDate appointmentDate = LocalDate.of(Integer.parseInt(appointDate.substring(0, 4)), Integer.parseInt(appointDate.substring(5, 7)), Integer.parseInt(appointDate.substring(8)));
-        LocalTime appointmentHour = LocalTime.of(Integer.parseInt(inputAppointTimePV.getText().substring(0, 2)), Integer.parseInt(inputAppointTimePV.getText().substring(3)));
-        LocalDateTime Finally = LocalDateTime.of(appointmentDate, appointmentHour);
-        String appointmentReason = inputTextAreaPV.getText();
-        long docId = Long.parseLong(inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex()));
-        Doctor doctor = null;
-        for(User use:this.users){
-            if (use.getId() == docId) {
-                doctor = (Doctor) use;
-            }
-        }
-        boolean appointmentType = (inputSelectAppointTypePV.getSelectedIndex() == 0 ? null : (inputSelectAppointTypePV.getSelectedIndex() == 2 ));
-        this.appointments.add(new Appointment(appointDate, patient, doctor, doctor.getSpecialty(), Finally, appointDate, appointmentType));
+//        String appointDate = inputAppointDatePV.getText();
+//        LocalDate appointmentDate = LocalDate.of(Integer.parseInt(appointDate.substring(0, 4)), Integer.parseInt(appointDate.substring(5, 7)), Integer.parseInt(appointDate.substring(8)));
+//        LocalTime appointmentHour = LocalTime.of(Integer.parseInt(inputAppointTimePV.getText().substring(0, 2)), Integer.parseInt(inputAppointTimePV.getText().substring(3)));
+//        LocalDateTime Finally = LocalDateTime.of(appointmentDate, appointmentHour);
+//        String appointmentReason = inputTextAreaPV.getText();
+//        long docId = Long.parseLong(inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex()));
+//        Doctor doctor = null;
+//        for (User use : this.users) {
+//            if (use.getId() == docId) {
+//                doctor = (Doctor) use;
+//            }
+//        }
+//        boolean appointmentType = (inputSelectAppointTypePV.getSelectedIndex() == 0 ? null : (inputSelectAppointTypePV.getSelectedIndex() == 2));
+//        this.appointments.add(new Appointment(appointDate, patient, doctor, doctor.getSpecialty(), Finally, appointDate, appointmentType));
     }//GEN-LAST:event_btnCreateRequestMediPVActionPerformed
 
 
     private void btnRefreshPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshPVActionPerformed
-        // TODO add your handling code here:
-        Patient p = (Patient) user;
-        DefaultTableModel model = (DefaultTableModel) tableAppointPV.getModel();
-        model.setRowCount(0);
-        for (Appointment a : p.getAppointments()) {
-            model.addRow(new Object[]{a.getId(), a.getDatetime().toString(), a.getDoctor().getFirstname() + " " + a.getDoctor().getLastname(), a.getSpecialty().name(), a.isType() ? "In-person" : "Remote", a.getStatus().name()});
-        }
+//        Patient p = (Patient) user;
+//        DefaultTableModel model = (DefaultTableModel) tableAppointPV.getModel();
+//        model.setRowCount(0);
+//        for (Appointment a : p.getAppointments()) {
+//            model.addRow(new Object[]{a.getId(), a.getDatetime().toString(), a.getDoctor().getFirstname() + " " + a.getDoctor().getLastname(), a.getSpecialty().name(), a.isType() ? "In-person" : "Remote", a.getStatus().name()});
+//        }
     }//GEN-LAST:event_btnRefreshPVActionPerformed
 
     private void btnCreateHospiPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateHospiPVActionPerformed
-        String hospitalizationReason = inputTextAreaHospiReasPV.getText();
-        long idDoctor = Long.parseLong(inputSelectAttendingPV.getItemAt(inputSelectAttendingPV.getSelectedIndex()));
-        Doctor doc = null;
-        for(User use: this.users){
-            if (use.getId()  == idDoctor ){ //Antes era use.id
-                doc = (Doctor) use;
-            }
-        }
-        LocalDate stimateDate = LocalDate.of(Integer.parseInt(inputEstiDatePV.getText().substring(0, 4)),Integer.parseInt(inputEstiDatePV.getText().substring(5, 7)), Integer.parseInt(inputEstiDatePV.getText().substring(8)));
-        
-        RoomType desireRoom = RoomType.valueOf(inputSelectDesiredRoomPV.getItemAt(inputSelectDesiredRoomPV.getSelectedIndex()).toUpperCase());
-        String observations = inputTextAreaObservPV.getText();
-        this.hospitalizations.add(new Hospitalization(observations, this.patient, doc, stimateDate, observations, desireRoom, observations));
+//        String hospitalizationReason = inputTextAreaHospiReasPV.getText();
+//        long idDoctor = Long.parseLong(inputSelectAttendingPV.getItemAt(inputSelectAttendingPV.getSelectedIndex()));
+//        Doctor doc = null;
+//        for (User use : this.users) {
+//            if (use.getId() == idDoctor) { //Antes era use.id
+//                doc = (Doctor) use;
+//            }
+//        }
+//        LocalDate stimateDate = LocalDate.of(Integer.parseInt(inputEstiDatePV.getText().substring(0, 4)), Integer.parseInt(inputEstiDatePV.getText().substring(5, 7)), Integer.parseInt(inputEstiDatePV.getText().substring(8)));
+//
+//        RoomType desireRoom = RoomType.valueOf(inputSelectDesiredRoomPV.getItemAt(inputSelectDesiredRoomPV.getSelectedIndex()).toUpperCase());
+//        String observations = inputTextAreaObservPV.getText();
+//        this.hospitalizations.add(new Hospitalization(observations, this.patient, doc, stimateDate, observations, desireRoom, observations));
     }//GEN-LAST:event_btnCreateHospiPVActionPerformed
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

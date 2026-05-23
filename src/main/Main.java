@@ -2,11 +2,9 @@ package main;
 
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import core.controllers.PatientController;
-import core.controllers.validators.PatientValidator;
-import core.model.PatientStorage;
+import core.app.AppContext;
+import core.app.Navigator;
 import core.model.UserStorage;
-import core.controllers.AuthController;
 import core.model.persistence.AdminDeserializer;
 import core.model.persistence.AdminSerializer;
 import core.model.persistence.DoctorDeserializer;
@@ -17,7 +15,6 @@ import core.model.persistence.PatientSerializer;
 import core.model.persistence.UserDeserializer;
 import core.model.persistence.UserPersistence;
 import core.model.persistence.UserSerializer;
-import core.view.MainView;
 import javax.swing.UIManager;
 
 /**
@@ -46,10 +43,9 @@ public class Main {
         persistence.load(UserStorage.getInstance());
         
         System.setProperty("flatlaf.useNativeLibrary", "false");
-        
-        var patientValidator = new PatientValidator();
-        var authController = new AuthController(UserStorage.getInstance());
-        var patientController = new PatientController(PatientStorage.getInstance(UserStorage.getInstance()), patientValidator);
+
+        AppContext appContext = AppContext.createDefault();
+        Navigator navigator = new Navigator(appContext);
 
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -57,11 +53,7 @@ public class Main {
             System.err.println("Failed to initialize LaF");
         }
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainView(patientController, authController).setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> navigator.showMain());
     }
     
 }

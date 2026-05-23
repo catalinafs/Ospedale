@@ -1,18 +1,12 @@
 package core.view;
 
-import com.formdev.flatlaf.FlatDarkLaf;
 import core.controllers.AuthController;
 import core.controllers.PatientController;
 import core.controllers.utils.Response;
-import core.model.Administrator;
-import core.model.Appointment;
-import core.model.Doctor;
-import core.model.Hospitalization;
-import core.model.Patient;
-import core.model.User;
 import java.awt.Color;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import core.app.Navigator;
+import core.controllers.utils.Status;
 
 public class MainView extends javax.swing.JFrame {
 
@@ -20,14 +14,16 @@ public class MainView extends javax.swing.JFrame {
 
     private PatientController patientController;
     private AuthController authController;
+    private Navigator navigator;
 
-    public MainView(PatientController patientController, AuthController authController) {
+    public MainView(PatientController patientController, AuthController authController, Navigator navigator) {
         initComponents();
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
 
         this.patientController = patientController;
         this.authController = authController;
+        this.navigator = navigator;
     }
 
     @SuppressWarnings("unchecked")
@@ -410,10 +406,10 @@ public class MainView extends javax.swing.JFrame {
         String psswd = inputPassMV.getText();
         String user = inputUserMV.getText();
         Response res = authController.login(user, psswd);
-        if (res.getStatus() == 201) {
-            System.out.println("SHEEEEEEEEESH");
+        if (res.getStatus() == Status.OK) {
+            navigator.openAfterLogin(res);
         } else {
-            System.out.println(res.getMessage());
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnEnterMVActionPerformed
 
@@ -429,11 +425,12 @@ public class MainView extends javax.swing.JFrame {
         String user = inputUserRegisMV.getText();
         String password = inputPassRegisMV.getText();
         String comPassword = inputPassConfirRegisMV.getText();
+
         Response res = patientController.register(id, user, firstname, lastname, password, comPassword, email, birth, gender, phone, address);
-        if (res.getStatus() == 201) {
-            System.out.println("SHEEEEEEEEESH");
+        if (res.getStatus() == Status.CREATED) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Registration successful", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            System.out.println(res.getMessage());
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnSaveRegisMVActionPerformed
 
