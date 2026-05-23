@@ -50,23 +50,45 @@ public class PatientStorage implements IPatientStorage{
     }
     
     @Override
-    public boolean updatePatient(long id, String username, String firstname, 
-            String lastname, String password, String email, LocalDate birthdate, 
-            boolean gender, long phone, String address) {
+    public boolean updatePatient(long id, String username, String firstname,
+            String lastname, String password, String email, LocalDate birthdate,
+            Boolean gender, Long phone, String address) {
         Patient patient = getPatient(id);
-        if (patient != null) {
-            patient.setUsername(username);
-            patient.setFirstname(firstname);
-            patient.setLastname(lastname);
-            patient.setPassword(password);
-            patient.setEmail(email);
-            patient.setBirthdate(birthdate);
-            patient.setGender(gender);
-            patient.setPhone(phone);
-            patient.setAddress(address);
-            return true;
+        if (patient == null) {
+            return false;
         }
-        return false;
+        if (hasText(username)) {
+            patient.setUsername(username.trim());
+        }
+        if (hasText(firstname)) {
+            patient.setFirstname(firstname.trim());
+        }
+        if (hasText(lastname)) {
+            patient.setLastname(lastname.trim());
+        }
+        if (hasText(password)) {
+            patient.setPassword(password);
+        }
+        if (hasText(email)) {
+            patient.setEmail(email.trim());
+        }
+        if (birthdate != null) {
+            patient.setBirthdate(birthdate);
+        }
+        if (gender != null) {
+            patient.setGender(gender);
+        }
+        if (phone != null) {
+            patient.setPhone(phone);
+        }
+        if (hasText(address)) {
+            patient.setAddress(address.trim());
+        }
+        return true;
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.trim().isEmpty();
     }
     
     @Override

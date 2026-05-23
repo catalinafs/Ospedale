@@ -23,8 +23,8 @@ public interface IPatientStorage{
             String password, 
             String email, 
             LocalDate birthdate, 
-            boolean gender, 
-            long phone, 
+            Boolean gender, 
+            Long phone, 
             String address
     );
     public ArrayList<Patient> getAllPatients();
