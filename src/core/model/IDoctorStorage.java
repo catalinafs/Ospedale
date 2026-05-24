@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public interface IDoctorStorage{
     public Doctor getDoctor(long id);
     public Doctor getDoctorByUsername(String username);
+    public Doctor getDoctorByFullName(String fullName);
     public boolean addDoctor(Doctor doctor);
     public boolean updateDoctor(
             long id, 

@@ -2,6 +2,8 @@ package core.app;
 
 import core.controllers.AppointmentController;
 import core.controllers.AuthController;
+import core.controllers.DoctorController;
+import core.controllers.HospitalizationController;
 import core.controllers.PatientController;
 import core.controllers.utils.Response;
 import core.model.Patient;
@@ -88,7 +90,9 @@ public final class Navigator {
                 user,
                 patient,
                 (PatientController) appContext.getPatientController(),
+                (DoctorController) appContext.getDoctorController(),
                 (AppointmentController) appContext.getAppointmentController(),
+                (HospitalizationController) appContext.getHospitalizationController(),
                 this
         );
         currentFrame = patientView;

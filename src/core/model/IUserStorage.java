@@ -11,6 +11,7 @@ package core.model;
 public interface IUserStorage {
     public User get(Long id);
     public User get(String username);
+    public User get(String fName, String lName);
     public boolean add(User user);
     public Iterable<User> getStorage();
 }

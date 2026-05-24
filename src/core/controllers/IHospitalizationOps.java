@@ -14,7 +14,7 @@ public interface IHospitalizationOps {
     Response requestHospitalization(
         long patientId,
         String reason,
-        long doctorId,
+        String doctorId,
         String estimatedDate,
         String roomType,
         String observations

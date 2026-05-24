@@ -18,7 +18,7 @@ public class Response {
         this.status = status;
         this.data = data;
     }
-
+    
     public String getMessage() {
         return message;
     }

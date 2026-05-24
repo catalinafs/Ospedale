@@ -72,12 +72,11 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
                     return new Response("No doctors available for that specialty at the given time.", Status.CONFLICT);
                 }
             } else {
-                long docId = Long.parseLong(doctorOrSpecialty);
-                doctor = doctorStorage.getDoctor(docId);
+                doctor = doctorStorage.getDoctorByFullName(doctorOrSpecialty);
                 if (doctor == null) {
                     return new Response("Doctor not found.", Status.NOT_FOUND);
                 }
-                if (!appointmentStorage.isDoctorAvailable(docId, date, time)) {
+                if (!appointmentStorage.isDoctorAvailable(doctor.getId(), date, time)) {
                     return new Response("Doctor is unavaialbe at the given time.", Status.CONFLICT);
                 }
             }
@@ -87,16 +86,16 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
                     LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"))
             );
-            
+
             Appointment appointment = new Appointment(
                     appointmentId, patient, doctor, doctor.getSpecialty(),
                     dateTime, reason, "consultation".equals(type)
             );
-            
+
             appointmentStorage.addAppointment(appointment);
             patient.getAppointments().add(appointment);
             doctor.getAppointments().add(appointment);
-            
+
             HashMap<String, Object> data = new HashMap<>();
             data.put("appointmentId", appointmentId);
             data.put("date", date);
@@ -150,18 +149,22 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
 
     @Override
     public Response cancelAppointment(String appointmentId, long patientId) {
-        Appointment appointment = appointmentStorage.getAppointment(appointmentId);
-        if (appointment == null) {
-            return new Response("Appointment not found.", Status.NOT_FOUND);
+        try {
+            Appointment appointment = appointmentStorage.getAppointment(appointmentId);
+            if (appointment == null) {
+                return new Response("Appointment not found.", Status.NOT_FOUND);
+            }
+            if (appointment.getPatient().getId() != patientId) {
+                return new Response("You are not the patient of this appointment.", Status.UNAUTHORIZED);
+            }
+            if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
+                return new Response("Cannot cancel a completed appointment.", Status.BAD_REQUEST);
+            }
+            appointment.setStatus(AppointmentStatus.CANCELED);
+            return new Response("Appointment canceled.", Status.OK);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }
-        if (appointment.getPatient().getId() != patientId) {
-            return new Response("You are not the patient of this appointment.", Status.UNAUTHORIZED);
-        }
-        if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
-            return new Response("Cannot cancel a completed appointment.", Status.BAD_REQUEST);
-        }
-        appointment.setStatus(AppointmentStatus.CANCELED);
-        return new Response("Appointment canceled.", Status.OK);
     }
 
     @Override

@@ -2,10 +2,15 @@ package core.app;
 
 import core.controllers.AppointmentController;
 import core.controllers.AuthController;
+import core.controllers.DoctorController;
+import core.controllers.HospitalizationController;
 import core.controllers.IAuthController;
+import core.controllers.IDoctorController;
 import core.controllers.IPatientController;
 import core.controllers.PatientController;
 import core.controllers.validators.AppointmentValidator;
+import core.controllers.validators.DoctorValidator;
+import core.controllers.validators.HospitalizationValidator;
 import core.controllers.validators.PatientValidator;
 import core.model.AppointmentStorage;
 import core.model.DoctorStorage;
@@ -29,6 +34,8 @@ public final class AppContext {
     private final IAuthController authController;
     private final IPatientController patientController;
     private final AppointmentController appointmentController;
+    private final IDoctorController doctorController;
+    private final HospitalizationController hospitalizationController;
 
     public AppContext(
             IUserStorage userStorage,
@@ -38,7 +45,9 @@ public final class AppContext {
             IHospitalizationStorage hospitalizationStorage,
             IAuthController authController,
             IPatientController patientController,
-            AppointmentController appointmentController) {
+            AppointmentController appointmentController,
+            IDoctorController doctorController,
+            HospitalizationController hospitalizationController) {
         this.userStorage = userStorage;
         this.patientStorage = patientStorage;
         this.doctorStorage = doctorStorage;
@@ -47,6 +56,8 @@ public final class AppContext {
         this.authController = authController;
         this.patientController = patientController;
         this.appointmentController = appointmentController;
+        this.doctorController = doctorController;
+        this.hospitalizationController = hospitalizationController;
     }
 
     public static AppContext createDefault() {
@@ -59,7 +70,9 @@ public final class AppContext {
         IAuthController authController = new AuthController(userStorage);
         IPatientController patientController = new PatientController(patientStorage, new PatientValidator());
         AppointmentController appointmentController = new AppointmentController(appointmentStorage, patientStorage, doctorStorage, new AppointmentValidator());
-
+        IDoctorController doctorController = new DoctorController(doctorStorage, new DoctorValidator());
+        HospitalizationController hospitalizationController = new HospitalizationController(hospitalizationStorage, patientStorage, doctorStorage, new HospitalizationValidator());
+        
         return new AppContext(
                 userStorage,
                 patientStorage,
@@ -68,11 +81,21 @@ public final class AppContext {
                 hospitalizationStorage,
                 authController,
                 patientController,
-                appointmentController);
+                appointmentController,
+                doctorController,
+                hospitalizationController);
+    }
+
+    public HospitalizationController getHospitalizationController() {
+        return hospitalizationController;
     }
 
     public IUserStorage getUserStorage() {
         return userStorage;
+    }
+
+    public IDoctorController getDoctorController() {
+        return doctorController;
     }
 
     public IPatientStorage getPatientStorage() {

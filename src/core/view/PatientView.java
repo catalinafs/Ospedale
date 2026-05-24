@@ -2,15 +2,21 @@ package core.view;
 
 import core.app.Navigator;
 import core.controllers.AppointmentController;
+import core.controllers.DoctorController;
+import core.controllers.HospitalizationController;
 import core.controllers.PatientController;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.model.Administrator;
+import core.model.Appointment;
+import core.model.Doctor;
 import core.model.Patient;
+import core.model.RoomType;
 import core.model.Specialty;
 import core.model.User;
 import java.awt.Color;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class PatientView extends javax.swing.JFrame {
 
@@ -19,14 +25,18 @@ public class PatientView extends javax.swing.JFrame {
     private Patient patient;
     private Navigator navigator;
     private PatientController patientController;
+    private DoctorController doctorController;
     private AppointmentController appointmentController;
+    private HospitalizationController hospitalizationController;
 
-    public PatientView(User user, Patient patient, PatientController patientController, AppointmentController appointmentController, Navigator navigator) {
+    public PatientView(User user, Patient patient, PatientController patientController, DoctorController doctorController, AppointmentController appointmentController, HospitalizationController hospitalizationController, Navigator navigator) {
         initComponents();
         this.user = user;
         this.patient = patient;
         this.patientController = patientController;
+        this.doctorController = doctorController;
         this.appointmentController = appointmentController;
+        this.hospitalizationController = hospitalizationController;
         this.navigator = navigator;
 
         if (user instanceof Administrator) {
@@ -38,6 +48,15 @@ public class PatientView extends javax.swing.JFrame {
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
 
+        for (Object doc : doctorController.getAllDoctors().getData().values().toArray()) {
+            if (doc instanceof Doctor doc_) {
+                inputSelectAttendingPV.addItem(doc_.getFirstname() + " " + doc_.getLastname());
+            }
+        }
+
+        for (RoomType type : RoomType.values()) {
+            inputSelectDesiredRoomPV.addItem(type.toString());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -768,12 +787,14 @@ public class PatientView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExtiPVActionPerformed
 
     private void btnCancelAppointPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelAppointPVActionPerformed
-//        String idAppointment = inputSelectIDappointPV.getItemAt(inputSelectIDappointPV.getSelectedIndex());
-//        for (Appointment ap : this.appointments) {
-//            if (ap.getId().equals(idAppointment)) {
-//                ap.setStatus(AppointmentStatus.CANCELED);
-//            }
-//        }
+        String idAppointment = inputSelectIDappointPV.getItemAt(inputSelectIDappointPV.getSelectedIndex());
+        Response res = appointmentController.cancelAppointment(idAppointment, patient.getId());
+        if (res.getStatus() == Status.OK) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment cancellation succesful", JOptionPane.INFORMATION_MESSAGE);
+            btnRefreshPVActionPerformed(null);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnCancelAppointPVActionPerformed
 
     private void btnSavePVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePVActionPerformed
@@ -823,11 +844,12 @@ public class PatientView extends javax.swing.JFrame {
         inputSelectRequestPV.removeAllItems();
 
         inputSelectRequestPV.addItem("Select one");
-//        for (User doc : this.users) {
-//            if (doc instanceof Doctor) {
-//                inputSelectRequestPV.addItem(doc.getFirstname() + " " + doc.getLastname());
-//            }
-//        }
+        for (Object doc : doctorController.getAllDoctors().getData().values().toArray()) {
+            if (doc instanceof Doctor doc_) {
+                inputSelectRequestPV.addItem(doc_.getFirstname() + " " + doc_.getLastname());
+            }
+        }
+
     }//GEN-LAST:event_btnRadioDoctorPVActionPerformed
 
     private void btnCreateRequestMediPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateRequestMediPVActionPerformed
@@ -835,13 +857,14 @@ public class PatientView extends javax.swing.JFrame {
         String date = inputAppointDatePV.getText();
         String time = inputAppointTimePV.getText();
         String reason = inputTextAreaPV.getText();
-        var selected_id = inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex());
+        String selected_id = inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex());
         int type = inputSelectAppointTypePV.getSelectedIndex();
         boolean isSpecialty = btnRadioSpecialtyPV.isSelected();
 
         Response res = appointmentController.requestAppointment(patient_id, date, time, type, reason, selected_id, isSpecialty);
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment request creation successful", JOptionPane.INFORMATION_MESSAGE);
+            btnRefreshPVActionPerformed(null);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
@@ -849,28 +872,32 @@ public class PatientView extends javax.swing.JFrame {
 
 
     private void btnRefreshPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshPVActionPerformed
-//        Patient p = (Patient) user;
-//        DefaultTableModel model = (DefaultTableModel) tableAppointPV.getModel();
-//        model.setRowCount(0);
-//        for (Appointment a : p.getAppointments()) {
-//            model.addRow(new Object[]{a.getId(), a.getDatetime().toString(), a.getDoctor().getFirstname() + " " + a.getDoctor().getLastname(), a.getSpecialty().name(), a.isType() ? "In-person" : "Remote", a.getStatus().name()});
-//        }
+        DefaultTableModel model = (DefaultTableModel) tableAppointPV.getModel();
+        model.setRowCount(0);
+        inputSelectIDappointPV.removeAllItems();
+        
+        inputSelectIDappointPV.addItem("Select one");
+        for (Appointment a : patient.getAppointments()) {
+            inputSelectIDappointPV.addItem(a.getId());
+            model.addRow(new Object[]{a.getId(), a.getDatetime().toString(), a.getDoctor().getFirstname() + " " + a.getDoctor().getLastname(), a.getSpecialty().name(), a.isType() ? "In-person" : "Remote", a.getStatus().name()});
+        }
     }//GEN-LAST:event_btnRefreshPVActionPerformed
 
     private void btnCreateHospiPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateHospiPVActionPerformed
-//        String hospitalizationReason = inputTextAreaHospiReasPV.getText();
-//        long idDoctor = Long.parseLong(inputSelectAttendingPV.getItemAt(inputSelectAttendingPV.getSelectedIndex()));
-//        Doctor doc = null;
-//        for (User use : this.users) {
-//            if (use.getId() == idDoctor) { //Antes era use.id
-//                doc = (Doctor) use;
-//            }
-//        }
-//        LocalDate stimateDate = LocalDate.of(Integer.parseInt(inputEstiDatePV.getText().substring(0, 4)), Integer.parseInt(inputEstiDatePV.getText().substring(5, 7)), Integer.parseInt(inputEstiDatePV.getText().substring(8)));
-//
-//        RoomType desireRoom = RoomType.valueOf(inputSelectDesiredRoomPV.getItemAt(inputSelectDesiredRoomPV.getSelectedIndex()).toUpperCase());
-//        String observations = inputTextAreaObservPV.getText();
-//        this.hospitalizations.add(new Hospitalization(observations, this.patient, doc, stimateDate, observations, desireRoom, observations));
+        long patient_id = patient.getId();
+        String reason = inputTextAreaHospiReasPV.getText();
+        String doctor_id = inputSelectAttendingPV.getItemAt(inputSelectAttendingPV.getSelectedIndex());
+        String admission_date = inputEstiDatePV.getText();
+        String room_type = inputSelectDesiredRoomPV.getItemAt(inputSelectDesiredRoomPV.getSelectedIndex());
+        String observations = inputTextAreaObservPV.getText();
+
+        Response res = hospitalizationController.requestHospitalization(patient_id, reason, doctor_id, admission_date, room_type, observations);
+        if (res.getStatus() == Status.CREATED) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Hospitalization request creation successful", JOptionPane.INFORMATION_MESSAGE);
+            btnRefreshPVActionPerformed(null);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnCreateHospiPVActionPerformed
 
 
