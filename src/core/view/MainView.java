@@ -127,6 +127,11 @@ public class MainView extends javax.swing.JFrame {
 
         btnEnterMV.setFont(new java.awt.Font("Yu Gothic UI", 0, 18)); // NOI18N
         btnEnterMV.setText("ENTER");
+        btnEnterMV.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEnterMVMouseClicked(evt);
+            }
+        });
         btnEnterMV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEnterMVActionPerformed(evt);
@@ -437,6 +442,10 @@ public class MainView extends javax.swing.JFrame {
     private void inputPassConfirRegisMVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputPassConfirRegisMVActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_inputPassConfirRegisMVActionPerformed
+
+    private void btnEnterMVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEnterMVMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEnterMVMouseClicked
 
     /**
      * @param args the command line arguments

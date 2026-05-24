@@ -23,6 +23,7 @@ public class AdminView extends javax.swing.JFrame {
         this.users = users;
         this.hospitalizations = hospitalizations;
         this.appointments = appointments;
+        
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
     }
