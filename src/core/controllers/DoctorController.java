@@ -33,8 +33,68 @@ public class DoctorController implements IDoctorController {
     }
 
     @Override
-    public Response update(long id, String username, String firstname, String lastname, String password, String passwordConfirm, String licenceNumber, String assignedOffice) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Response update(long id, String username, String firstname, String lastname, String password, String passwordConfirm, String specialty, String licenseNumber, String assignedOffice) {
+        try {
+            if (storage.getDoctor(id) == null) {
+                return new Response("Doctor not found.", Status.NOT_FOUND);
+            }
+
+            if (specialty != null && !specialty.trim().isEmpty()) {
+                Response error = validator.validateSpecialty(specialty);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            if (licenseNumber != null && !licenseNumber.trim().isEmpty()) {
+                Response error = validator.validateLicence(licenseNumber);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            if (assignedOffice != null && !assignedOffice.trim().isEmpty()) {
+                Response error = validator.validateOffice(assignedOffice);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            if (username != null && !username.trim().isEmpty()) {
+                Doctor docWithUsername = storage.getDoctorByUsername(username.trim());
+                if (docWithUsername != null && docWithUsername.getId() != id) {
+                    return new Response("Username already in use.", Status.CONFLICT);
+                }
+            }
+
+            boolean passwordProvided = password != null && !password.trim().isEmpty();
+            boolean confirmationProvided = passwordConfirm != null && !passwordConfirm.trim().isEmpty();
+            if (passwordProvided || confirmationProvided) {
+                if (!passwordProvided || !confirmationProvided) {
+                    return new Response(
+                            "Password and confirmation must both be provided to change the password.",
+                            Status.BAD_REQUEST);
+                }
+                Response error = validator.validatePassword(password, passwordConfirm);
+                if (error != null) {
+                    return error;
+                }
+            }
+
+            if (!storage.updateDoctor(id, username, firstname, lastname, password, licenseNumber, assignedOffice)) {
+                return new Response("Doctor not found.", Status.NOT_FOUND);
+            }
+
+            Doctor updated = storage.getDoctor(id);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("id", id);
+            data.put("username", updated.getUsername());
+            data.put("firstname", updated.getFirstname());
+            data.put("lastname", updated.getLastname());
+            return new Response("Update successful.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
@@ -47,11 +107,11 @@ public class DoctorController implements IDoctorController {
         try {
             var doctors = storage.getAllDoctors();
             HashMap<String, Object> map = new HashMap();
-            
+
             for (Doctor doc : doctors) {
                 map.put(String.valueOf(doc.getId()), doc);
             }
-            
+
             return new Response("Doctors found.", Status.OK, map);
         } catch (Exception e) {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);

@@ -12,7 +12,8 @@ import core.model.Specialty;
  *
  * @author daniel
  */
-public class DoctorValidator implements IDoctorValidator{
+public class DoctorValidator implements IDoctorValidator {
+
     @Override
     public Response validateUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
@@ -20,7 +21,7 @@ public class DoctorValidator implements IDoctorValidator{
         }
         return null;
     }
-    
+
     @Override
     public Response validatePassword(String password, String passwordConfirm) {
         if (password == null || password.trim().isEmpty()) {
@@ -31,7 +32,7 @@ public class DoctorValidator implements IDoctorValidator{
         }
         return null;
     }
-    
+
     @Override
     public Response validateLicence(String licence) {
         if (licence == null || licence.length() != 16) {
@@ -46,7 +47,7 @@ public class DoctorValidator implements IDoctorValidator{
         }
         return null;
     }
-    
+
     @Override
     public Response validateOffice(String office) {
         if (office == null || office.length() != 5) {
@@ -61,15 +62,21 @@ public class DoctorValidator implements IDoctorValidator{
         }
         return null;
     }
-    
+
     @Override
-    public Response validateSpecialty(Specialty specialty) {
-        if (specialty == null) {
-            return new Response("Specialty is required.", Status.BAD_REQUEST);
+    public Response validateSpecialty(String specialty) {
+        try {
+            if (specialty == null || specialty.trim().isEmpty()) {
+                return new Response("Specialty is required.", Status.BAD_REQUEST);
+            }
+
+            Specialty.valueOf(specialty.toUpperCase().replace(" & ", "_"));
+            return null;
+        } catch (IllegalArgumentException e) {
+            return new Response("Invalid specialty.", Status.BAD_REQUEST);
         }
-        return null;
     }
-    
+
     @Override
     public Response validateId(String id_str) {
         if (id_str == null || id_str.trim().isEmpty()) {

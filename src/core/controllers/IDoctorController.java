@@ -31,6 +31,7 @@ public interface IDoctorController {
         String lastname,
         String password, 
         String passwordConfirm,
+        String specialty,
         String licenceNumber, 
         String assignedOffice
     );
