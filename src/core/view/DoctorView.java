@@ -4,22 +4,20 @@
  */
 package core.view;
 
+import core.app.Navigator;
+import core.controllers.AppointmentController;
+import core.controllers.DoctorController;
+import core.controllers.HospitalizationController;
+import core.controllers.PatientController;
+import core.controllers.utils.Response;
+import core.controllers.utils.Status;
 import core.model.Administrator;
-import core.model.Appointment;
-import core.model.AppointmentStatus;
 import core.model.Doctor;
-import core.model.Hospitalization;
-import core.model.HospitalizationStatus;
-import core.model.Patient;
-import core.model.Prescription;
-import core.model.RoomType;
-import core.model.Specialty;
 import core.model.User;
-import core.view.MainView;
 import java.awt.Color;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -31,24 +29,53 @@ public class DoctorView extends javax.swing.JFrame {
 
     private int x, y;
     private User user;
-    private ArrayList<User> users;
-    private ArrayList<Hospitalization>hospitalizations;
-    private ArrayList<Appointment>appointments;
     private Doctor doctor;
-    private Patient patient;
-    public DoctorView(User user,Doctor doc, ArrayList<User> users,ArrayList<Hospitalization> hospitalizations,ArrayList<Appointment> appointments) {
+    private Navigator navigator;
+    private DoctorController doctorController;
+    private PatientController patientController;
+    private AppointmentController appointmentController;
+    private HospitalizationController hospitalizationController;
+
+    public DoctorView(User user, Doctor doc, PatientController patientController, DoctorController doctorController, AppointmentController appointmentController, HospitalizationController hospitalizationController, Navigator navigator) {
         initComponents();
         this.user = user;
-        this.users =users;
         this.doctor = doc;
-        this.hospitalizations = hospitalizations;
-        this.appointments = appointments;
-        if (user instanceof Administrator)
+        this.patientController = patientController;
+        this.doctorController = doctorController;
+        this.appointmentController = appointmentController;
+        this.hospitalizationController = hospitalizationController;
+        this.navigator = navigator;
+
+        if (user instanceof Administrator) {
             btnBackDV.setVisible(true);
-        else    
+        } else {
             btnBackDV.setVisible(false);
+        }
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
+
+        btnRadioTotalAppointDVActionPerformed(null);
+
+        Response res = patientController.getAllPatients();
+        ArrayList<HashMap<String, Object>> patients = (ArrayList<HashMap<String, Object>>) res.getData().get("patients");
+        inputSelectPatientDV.removeAllItems();
+        inputSelectPatientDV.addItem("Select one");
+        for (HashMap<String, Object> pat : patients) {
+            String fullname = String.valueOf(pat.get("fullname"));
+            inputSelectPatientDV.addItem(fullname);
+        }
+
+        Response res2 = appointmentController.getDoctorAppointments(user.getId());
+        ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res2.getData().get("appointments");
+
+        inputSelectAppointIDDV.removeAllItems();
+        inputSelectAppointDV.removeAllItems();
+        inputCompleteAppointDV.removeAllItems();
+        for (HashMap<String, Object> appt : appointments) {
+            inputSelectAppointIDDV.addItem(String.valueOf(appt.get("id")));
+            inputSelectAppointDV.addItem(String.valueOf(appt.get("id")));
+            inputCompleteAppointDV.addItem(String.valueOf(appt.get("id")));
+        }
     }
 
     /**
@@ -1128,117 +1155,131 @@ public class DoctorView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExitDVActionPerformed
 
     private void btnRadioPendingAppointDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRadioPendingAppointDVActionPerformed
-        // TODO add your handling code here:
         btnRadioTotalAppointDV.setSelected(false);
-        Doctor d = (Doctor) user;
+        btnRadioPendingAppointDV.setSelected(true);
         DefaultTableModel model = (DefaultTableModel) tableAppointmentsDV.getModel();
         model.setRowCount(0);
-        for (Appointment a : d.getAppointments()) {
-            if (a.getStatus().equals(AppointmentStatus.PENDING)) {
-                model.addRow(new Object[]{a.getId(), a.getDatetime().toString(), a.getPatient().getFirstname() + " " + a.getDoctor().getLastname(), a.getSpecialty().name(), a.isType() ? "In person" : "Virtual", a.getStatus().name()});
-            }
+
+        Response res = appointmentController.getDoctorPending(user.getId());
+        ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res.getData().get("appointments");
+
+        for (HashMap<String, Object> appt : appointments) {
+            model.addRow(new Object[]{
+                appt.get("id"),
+                appt.get("date"),
+                appt.get("time"),
+                appt.get("patient"),
+                appt.get("specialty"),
+                appt.get("status"),
+                appt.get("reason")
+            });
         }
     }//GEN-LAST:event_btnRadioPendingAppointDVActionPerformed
 
     private void btnSavedModifyDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavedModifyDVActionPerformed
         String firstname = inputFirstnameDV.getText();
         String lastname = inputLastnameDV.getText();
-        String spec = inputSpecialtyDV.getItemAt(inputSpecialtyDV.getSelectedIndex());
+        String specialty = inputSpecialtyDV.getItemAt(inputSpecialtyDV.getSelectedIndex());
         String licenseNumber = inputLicenseDV.getText();
         String assignedOffice = inputAssignedOfficeDV.getText();
         String username = inputUserDV.getText();
         String password = inputPassDV.getText();
         String comPassword = inputPassConfirDV.getText();
-        Specialty specialty = Specialty.valueOf(spec.replaceAll(" &", "").replaceAll(" ", "_"));
-        if (password.equals(comPassword)) {
-            for(User doc: this.users){
-                if (doctor.getId() == doc.getId()) {
-                    doctor.setFirstname(firstname);
-                    doctor.setLastname(lastname);
-                    doctor.setPassword(password);
-                    doctor.setUsername(username);
-                    doctor.setAssignedOffice(assignedOffice);
-                    doctor.setLicenceNumber(licenseNumber);
-                    doctor.setSpecialty(specialty);
-                    
-                }
-            }
+        Response res = doctorController.update(user.getId(), username, firstname, lastname, password, comPassword, specialty, licenseNumber, assignedOffice);
+        if (res.getStatus() == Status.OK) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnSavedModifyDVActionPerformed
 
     private void btnLogoutDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutDVActionPerformed
-        //MainView login = new MainView();
-        this.setVisible(false);
-        //login.setVisible(true);
+        navigator.logout();
     }//GEN-LAST:event_btnLogoutDVActionPerformed
 
     private void btnBackDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackDVActionPerformed
-        AdminView admin = new AdminView(user,users,hospitalizations, appointments);
-        this.setVisible(false);
-        admin.setVisible(true);
+        navigator.showAdmin(user);
     }//GEN-LAST:event_btnBackDVActionPerformed
 
     private void btnCancelHospiDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelHospiDVActionPerformed
-        if (btnRadioRequestDV.isSelected()) {
-            for(Hospitalization hosp : this.hospitalizations){
-                if (inputSelectRequestDV.getItemAt(inputSelectRequestDV.getSelectedIndex()) == hosp.getId()) {
-                    hosp.setStatus(HospitalizationStatus.CANCELED);
-                }
-            }
-        }
+//        if (btnRadioRequestDV.isSelected()) {
+//            for(Hospitalization hosp : this.hospitalizations){
+//                if (inputSelectRequestDV.getItemAt(inputSelectRequestDV.getSelectedIndex()) == hosp.getId()) {
+//                    hosp.setStatus(HospitalizationStatus.CANCELED);
+//                }
+//            }
+//        }
     }//GEN-LAST:event_btnCancelHospiDVActionPerformed
 
     private void btnGenerateHospiDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateHospiDVActionPerformed
-        if (btnRadioPatientIDDV.isSelected()) {
-            for(User user: this.users){
-                if (user instanceof Patient) {
-                    if (inputSelectPatientIDDV.getItemAt(inputSelectPatientIDDV.getSelectedIndex()).equals(user.getId())) {
-                        if (this.user instanceof Administrator) {
-                            String reason = inputTextAreaReasHospiDV.getText();
-                            String observations = inputHospiObservDV.getText();
-                            String entDate = inputDateEntryDV.getText();
-                            LocalDate entryDate = LocalDate.of(Integer.parseInt(entDate.substring(0, 4)), Integer.parseInt(entDate.substring(5, 7)), Integer.parseInt(entDate.substring(8)));
-                            this.hospitalizations.add(new Hospitalization("asdfasdf", (Patient)user, this.doctor, LocalDate.MAX, reason, RoomType.IMC, observations, HospitalizationStatus.ONGOING));
-                        }
-                    }
-                }
-            }
-        }
+//        if (btnRadioPatientIDDV.isSelected()) {
+//            for(User user: this.users){
+//                if (user instanceof Patient) {
+//                    if (inputSelectPatientIDDV.getItemAt(inputSelectPatientIDDV.getSelectedIndex()).equals(user.getId())) {
+//                        if (this.user instanceof Administrator) {
+//                            String reason = inputTextAreaReasHospiDV.getText();
+//                            String observations = inputHospiObservDV.getText();
+//                            String entDate = inputDateEntryDV.getText();
+//                            LocalDate entryDate = LocalDate.of(Integer.parseInt(entDate.substring(0, 4)), Integer.parseInt(entDate.substring(5, 7)), Integer.parseInt(entDate.substring(8)));
+//                            this.hospitalizations.add(new Hospitalization("asdfasdf", (Patient)user, this.doctor, LocalDate.MAX, reason, RoomType.IMC, observations, HospitalizationStatus.ONGOING));
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }//GEN-LAST:event_btnGenerateHospiDVActionPerformed
 
     private void btnSearchHistoryPatientDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchHistoryPatientDVActionPerformed
-        // TODO add your handling code here:
-        Patient p = null;
-        for (User u : this.users) {
-            if (u.getId() == Long.parseLong(inputSelectPatientDV.getItemAt(inputSelectPatientDV.getSelectedIndex()))) {
-                p = (Patient) u;
-            }
-        }
-        
+        String fullname = inputSelectPatientDV.getItemAt(inputSelectPatientDV.getSelectedIndex());
+        Response res = appointmentController.getPatientAppointments(fullname);
+        ArrayList<HashMap<String, Object>> appoints = (ArrayList<HashMap<String, Object>>) res.getData().get("appointments");
+
         DefaultTableModel model = (DefaultTableModel) tableHistoryPatientDV.getModel();
         model.setRowCount(0);
-        for (Appointment a : p.getAppointments()) {
-            model.addRow(new Object[]{a.getId(), a.getDatetime().toString(), a.getDoctor().getFirstname() + " " + a.getDoctor().getLastname(), a.getSpecialty().name(), a.isType() ? "In-person" : "Remote", a.getStatus().name()});
+
+        for (HashMap<String, Object> app : appoints) {
+            model.addRow(
+                    new Object[]{
+                        app.get("id"),
+                        app.get("date") + " " + app.get("time"),
+                        app.get("doctor"),
+                        app.get("specialty"),
+                        app.get("type"),
+                        app.get("status")
+                    }
+            );
         }
     }//GEN-LAST:event_btnSearchHistoryPatientDVActionPerformed
 
     private void btnRadioTotalAppointDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRadioTotalAppointDVActionPerformed
-        // TODO add your handling code here:
         btnRadioPendingAppointDV.setSelected(false);
-        Doctor d = (Doctor) user;
+        btnRadioTotalAppointDV.setSelected(true);
         DefaultTableModel model = (DefaultTableModel) tableAppointmentsDV.getModel();
         model.setRowCount(0);
-        for (Appointment a : d.getAppointments()) {
-            model.addRow(new Object[]{a.getId(), a.getDatetime().toString(), a.getPatient().getFirstname() + " " + a.getDoctor().getLastname(), a.getSpecialty().name(), a.isType() ? "In-person" : "Remote", a.getStatus().name()});
+
+        Response res = appointmentController.getDoctorAppointments(user.getId());
+        ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res.getData().get("appointments");
+
+        for (HashMap<String, Object> appt : appointments) {
+            model.addRow(new Object[]{
+                appt.get("id"),
+                appt.get("date"),
+                appt.get("time"),
+                appt.get("patient"),
+                appt.get("specialty"),
+                appt.get("status"),
+                appt.get("reason")
+            });
         }
     }//GEN-LAST:event_btnRadioTotalAppointDVActionPerformed
 
     private void btnAppointIDDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAppointIDDVActionPerformed
         String idAppointment = inputSelectAppointIDDV.getItemAt(inputSelectAppointIDDV.getSelectedIndex());
-        for(Appointment apo: this.appointments){
-            if(apo.getId() == idAppointment){
-                apo.setStatus(AppointmentStatus.PENDING);
-            }
+        Response res = appointmentController.acceptAppointment(idAppointment, user.getId());
+        if (res.getStatus() == Status.OK) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment acception successful", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAppointIDDVActionPerformed
 
@@ -1248,56 +1289,50 @@ public class DoctorView extends javax.swing.JFrame {
         String observations = inputTextAreaObservDV.getText();
         String recommendedTrea = inputTextAreaRecoTreatDV.getText();
         String followUp = inputTextAreaFollowIndicDV.getText();
-        for(Appointment apo: this.appointments){
-            if(apo.getId() == idAppointment){
-                apo.setStatus(AppointmentStatus.CANCELED);
-                apo.setDiagnosis(diagnosis);
-                apo.setFollowUp(followUp);
-                apo.setRecommendedTreatment(recommendedTrea);
-                apo.setObservations(observations);
-            }
+        Response res = appointmentController.completeAppointment(idAppointment, user.getId(), diagnosis, followUp, recommendedTrea, observations);
+        if (res.getStatus() == Status.OK) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment completion successful", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCompletDVActionPerformed
 
     private void btnPrescribePresMediDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrescribePresMediDVActionPerformed
-        DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
-        model.setRowCount(0);
+//        DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
+//        model.setRowCount(0);
     }//GEN-LAST:event_btnPrescribePresMediDVActionPerformed
 
     private void btnAddPresMediDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPresMediDVActionPerformed
         // TODO add your handling code here:
-        DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
-        
-        String appointmentId = inputSelectAppointPresMediDV.getItemAt(inputSelectAppointPresMediDV.getSelectedIndex());
-        String medicationName = inputMediNamePresMediDV.getText();
-        double dose = Double.parseDouble(inputDosePresMediDV.getText());
-        String administrationRoute = inputAdminRoutePresMediDV.getText();
-        int tratementduration = Integer.parseInt(inputTreatDuratPresMediDV.getText());
-        String aditionalIformation = inputAdditInstrucPresMediDV.getText();
-        int frecuency = Integer.parseInt(inputFrecuenPresMediDV.getText());
-        
-        model.addRow(new Object[]{appointmentId, medicationName, inputDosePresMediDV.getText(), administrationRoute, "" + tratementduration, aditionalIformation, "" + frecuency});
-        for(Appointment apo: this.appointments){
-            if (apo.getId().equals(appointmentId)){
-                apo.addPrescription(new Prescription(apo, medicationName, dose, administrationRoute, tratementduration, aditionalIformation, frecuency));
-            }
-        }
+//        DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
+//        
+//        String appointmentId = inputSelectAppointPresMediDV.getItemAt(inputSelectAppointPresMediDV.getSelectedIndex());
+//        String medicationName = inputMediNamePresMediDV.getText();
+//        double dose = Double.parseDouble(inputDosePresMediDV.getText());
+//        String administrationRoute = inputAdminRoutePresMediDV.getText();
+//        int tratementduration = Integer.parseInt(inputTreatDuratPresMediDV.getText());
+//        String aditionalIformation = inputAdditInstrucPresMediDV.getText();
+//        int frecuency = Integer.parseInt(inputFrecuenPresMediDV.getText());
+//        
+//        model.addRow(new Object[]{appointmentId, medicationName, inputDosePresMediDV.getText(), administrationRoute, "" + tratementduration, aditionalIformation, "" + frecuency});
+//        for(Appointment apo: this.appointments){
+//            if (apo.getId().equals(appointmentId)){
+//                apo.addPrescription(new Prescription(apo, medicationName, dose, administrationRoute, tratementduration, aditionalIformation, frecuency));
+//            }
+//        }
     }//GEN-LAST:event_btnAddPresMediDVActionPerformed
 
     private void btnAcceptResMediAppointDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcceptResMediAppointDVActionPerformed
-        String appointmentId = inputSelectAppointDV.getItemAt(inputSelectAppointDV.getSelectedIndex());
-        Appointment appointment = null;
-        for(Appointment apo: this.appointments){
-            if (apo.getId().equals(appointmentId)) {
-                appointment = apo;
-            }
-        }
-        appointment.getDatetime().with(LocalTime.of(Integer.parseInt(inputNewTimeAppointDV.getText().substring(0, 2)),Integer.parseInt(inputNewTimeAppointDV.getText().substring(3))));
+        String idAppointment = inputSelectAppointIDDV.getItemAt(inputSelectAppointIDDV.getSelectedIndex());
         String reasonChangeTime = inputReasonAppointDV.getText();
-        appointment.setReason(reasonChangeTime);
+        String newTime = inputNewTimeAppointDV.getText();
+        Response res = appointmentController.rescheduleAppointment(idAppointment, user.getId(), newTime, reasonChangeTime);
+        if (res.getStatus() == Status.OK) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment reschedule successful", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnAcceptResMediAppointDVActionPerformed
-
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
