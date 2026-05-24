@@ -6,8 +6,10 @@ import core.controllers.DoctorController;
 import core.controllers.HospitalizationController;
 import core.controllers.PatientController;
 import core.controllers.utils.Response;
+import core.model.Doctor;
 import core.model.Patient;
 import core.model.User;
+import core.view.DoctorView;
 import core.view.MainView;
 import core.view.PatientView;
 import java.util.Map;
@@ -77,7 +79,22 @@ public final class Navigator {
     }
 
     public void showDoctor(User user) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (!(user instanceof Doctor doctor)) {
+            throw new IllegalArgumentException("User is not a patient.");
+        }
+
+        hideCurrent();
+        DoctorView doctorView = new DoctorView(
+                user,
+                doctor,
+                (PatientController) appContext.getPatientController(),
+                (DoctorController) appContext.getDoctorController(),
+                (AppointmentController) appContext.getAppointmentController(),
+                (HospitalizationController) appContext.getHospitalizationController(),
+                this
+        );
+        currentFrame = doctorView;
+        doctorView.setVisible(true);
     }
 
     public void showPatient(User user) {

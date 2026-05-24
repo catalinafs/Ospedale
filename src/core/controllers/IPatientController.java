@@ -42,4 +42,6 @@ public interface IPatientController {
     );
 
     public Response getPatient(long id);
+    public Response getPatient(String fullname);
+    public Response getAllPatients();
 }

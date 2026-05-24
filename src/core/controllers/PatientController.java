@@ -6,6 +6,7 @@ import core.controllers.validators.IPatientValidator;
 import core.model.IPatientStorage;
 import core.model.Patient;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PatientController implements IPatientController {
@@ -219,5 +220,47 @@ public class PatientController implements IPatientController {
         data.put("phone", patient.getPhone());
         data.put("address", patient.getAddress());
         return new Response("Patient found.", Status.OK, data);
+    }
+
+    @Override
+    public Response getAllPatients() {
+        try {
+            var patients = storage.getAllPatients();
+            ArrayList<HashMap<String, Object>> patientList = new ArrayList<>();
+            for (Patient doc : patients) {
+                HashMap<String, Object> data = new HashMap<>();
+                data.put("id", doc.getId());
+                data.put("fullname", doc.getFirstname() + " " + doc.getLastname());
+                patientList.add(data);
+            }
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("patients", patientList);
+            return new Response("Patients found.", Status.OK, result);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public Response getPatient(String fullname) {
+        try {
+            Patient patient = storage.getPatientByFullName(fullname);
+            if (patient == null) {
+                return new Response("Patient not found.", Status.NOT_FOUND);
+            }
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("id", patient.getId());
+            data.put("username", patient.getUsername());
+            data.put("firstname", patient.getFirstname());
+            data.put("lastname", patient.getLastname());
+            data.put("email", patient.getEmail());
+            data.put("birthdate", patient.getBirthdate().toString());
+            data.put("gender", patient.isGender());
+            data.put("phone", patient.getPhone());
+            data.put("address", patient.getAddress());
+            return new Response("Patient found.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 }

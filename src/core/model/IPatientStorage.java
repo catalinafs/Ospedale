@@ -11,21 +11,28 @@ import java.util.ArrayList;
  *
  * @author daniel
  */
-public interface IPatientStorage{
+public interface IPatientStorage {
+
     public Patient getPatient(long id);
+
     public Patient getPatientByUsername(String username);
+    
+    public Patient getPatientByFullName(String fullname);
+
     public boolean addPatient(Patient patient);
+
     public boolean updatePatient(
-            long id, 
-            String username, 
-            String firstname, 
-            String lastname, 
-            String password, 
-            String email, 
-            LocalDate birthdate, 
-            Boolean gender, 
-            Long phone, 
+            long id,
+            String username,
+            String firstname,
+            String lastname,
+            String password,
+            String email,
+            LocalDate birthdate,
+            Boolean gender,
+            Long phone,
             String address
     );
+
     public ArrayList<Patient> getAllPatients();
 }

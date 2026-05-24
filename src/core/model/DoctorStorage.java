@@ -63,16 +63,35 @@ public class DoctorStorage implements IDoctorStorage {
     public boolean updateDoctor(long id, String username, String firstname,
             String lastname, String password, String licenceNumber, String assignedOffice) {
         Doctor doctor = getDoctor(id);
-        if (doctor != null) {
-            doctor.setUsername(username);
-            doctor.setFirstname(firstname);
-            doctor.setLastname(lastname);
-            doctor.setPassword(password);
-            doctor.setLicenceNumber(licenceNumber);
-            doctor.setAssignedOffice(assignedOffice);
-            return true;
+        if (doctor == null) {
+            return false;
         }
-        return false;
+
+        if (username != null && !username.trim().isEmpty()) {
+            doctor.setUsername(username);
+        }
+
+        if (firstname != null && !firstname.trim().isEmpty()) {
+            doctor.setFirstname(firstname);
+        }
+
+        if (lastname != null && !lastname.trim().isEmpty()) {
+            doctor.setLastname(lastname);
+        }
+
+        if (password != null && !password.trim().isEmpty()) {
+            doctor.setPassword(password);
+        }
+
+        if (licenceNumber != null && !licenceNumber.trim().isEmpty()) {
+            doctor.setLicenceNumber(licenceNumber);
+        }
+
+        if (assignedOffice != null && !assignedOffice.trim().isEmpty()) {
+            doctor.setAssignedOffice(assignedOffice);
+        }
+
+        return true;
     }
 
     @Override

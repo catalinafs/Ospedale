@@ -48,6 +48,8 @@ public class PatientView extends javax.swing.JFrame {
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
 
+        btnRefreshPVActionPerformed(null);
+
         for (Object doc : doctorController.getAllDoctors().getData().values().toArray()) {
             if (doc instanceof Doctor doc_) {
                 inputSelectAttendingPV.addItem(doc_.getFirstname() + " " + doc_.getLastname());
@@ -875,7 +877,7 @@ public class PatientView extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tableAppointPV.getModel();
         model.setRowCount(0);
         inputSelectIDappointPV.removeAllItems();
-        
+
         inputSelectIDappointPV.addItem("Select one");
         for (Appointment a : patient.getAppointments()) {
             inputSelectIDappointPV.addItem(a.getId());

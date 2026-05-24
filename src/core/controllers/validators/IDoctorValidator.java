@@ -14,5 +14,5 @@ import core.model.Specialty;
 public interface IDoctorValidator extends IUserValidator{
     public Response validateLicence(String licence);
     public Response validateOffice(String office);
-    public Response validateSpecialty(Specialty specialty);
+    public Response validateSpecialty(String specialty);
 }
