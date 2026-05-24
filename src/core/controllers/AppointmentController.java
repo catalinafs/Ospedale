@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -128,7 +129,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
     }
 
     @Override
-    public Response completeAppointment(String appointmentId, long doctorId) {
+    public Response completeAppointment(String appointmentId, long doctorId, String diagnosis, String followUp, String recommendedTreatment, String observations) {
         Appointment appointment = appointmentStorage.getAppointment(appointmentId);
         if (appointment == null) {
             return new Response("Appointment not found.", Status.NOT_FOUND);
@@ -143,7 +144,13 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         if (appointment.getStatus() != AppointmentStatus.PENDING) {
             return new Response("Appointment cannot be completed.", Status.BAD_REQUEST);
         }
+
         appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointment.setDiagnosis(diagnosis);
+        appointment.setFollowUp(followUp);
+        appointment.setRecommendedTreatment(recommendedTreatment);
+        appointment.setObservations(observations);
+
         return new Response("Appointment completed.", Status.OK);
     }
 
@@ -202,8 +209,8 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
     }
 
     @Override
-    public Response getPatientAppointments(long patientId) {
-        Patient patient = patientStorage.getPatient(patientId);
+    public Response getPatientAppointments(String fullname) {
+        Patient patient = patientStorage.getPatientByFullName(fullname);
         if (patient == null) {
             return new Response("Patient not found.", Status.NOT_FOUND);
         }
@@ -216,9 +223,9 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
             data.put("date", appt.getDatetime().toLocalDate().toString());
             data.put("time", appt.getDatetime().toLocalTime().toString().substring(0, 5));
             data.put("doctor", appt.getDoctor().getFirstname() + " " + appt.getDoctor().getLastname());
-            data.put("specialty", appt.getSpecialty().toString());
+            data.put("specialty", appt.getSpecialty().name().toString());
+            data.put("type", appt.isType() ? "In-Person" : "Remote");
             data.put("status", appt.getStatus().toString());
-            data.put("reason", appt.getReason());
             appointmentList.add(data);
         }
         HashMap<String, Object> result = new HashMap<>();
@@ -232,10 +239,13 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         if (doctor == null) {
             return new Response("Doctor not found.", Status.NOT_FOUND);
         }
-        ArrayList<Appointment> appointments = doctor.getAppointments();
-        appointments.sort((a, b) -> b.getDatetime().compareTo(a.getDatetime()));
+
+        ArrayList<Appointment> sorted = doctor.getAppointments().stream()
+                .sorted((a, b) -> b.getDatetime().compareTo(a.getDatetime()))
+                .collect(Collectors.toCollection(ArrayList::new));
+
         ArrayList<HashMap<String, Object>> appointmentList = new ArrayList<>();
-        for (Appointment appt : appointments) {
+        for (Appointment appt : sorted) {
             HashMap<String, Object> data = new HashMap<>();
             data.put("id", appt.getId());
             data.put("date", appt.getDatetime().toLocalDate().toString());
@@ -246,6 +256,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
             data.put("reason", appt.getReason());
             appointmentList.add(data);
         }
+
         HashMap<String, Object> result = new HashMap<>();
         result.put("appointments", appointmentList);
         return new Response("Appointments retrieved.", Status.OK, result);
@@ -257,11 +268,14 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         if (doctor == null) {
             return new Response("Doctor not found.", Status.NOT_FOUND);
         }
-        ArrayList<Appointment> appointments = doctor.getAppointments();
-        appointments.removeIf(appt -> appt.getStatus() != AppointmentStatus.PENDING);
-        appointments.sort((a, b) -> b.getDatetime().compareTo(a.getDatetime()));
+
+        ArrayList<Appointment> pending = doctor.getAppointments().stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.PENDING)
+                .sorted((a, b) -> b.getDatetime().compareTo(a.getDatetime()))
+                .collect(Collectors.toCollection(ArrayList::new));
+
         ArrayList<HashMap<String, Object>> appointmentList = new ArrayList<>();
-        for (Appointment appt : appointments) {
+        for (Appointment appt : pending) {
             HashMap<String, Object> data = new HashMap<>();
             data.put("id", appt.getId());
             data.put("date", appt.getDatetime().toLocalDate().toString());
@@ -272,6 +286,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
             data.put("reason", appt.getReason());
             appointmentList.add(data);
         }
+
         HashMap<String, Object> result = new HashMap<>();
         result.put("appointments", appointmentList);
         return new Response("Pending appointments retrieved.", Status.OK, result);

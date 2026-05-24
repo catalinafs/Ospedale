@@ -11,7 +11,7 @@ import core.controllers.utils.Response;
  * @author daniel
  */
 public interface IAppointmentQuery {
-    public Response getPatientAppointments(long patientId);
+    public Response getPatientAppointments(String fullname);
     public Response getDoctorAppointments(long doctorId);
     public Response getDoctorPending(long doctorId);
 }
