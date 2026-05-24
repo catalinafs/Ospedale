@@ -17,7 +17,7 @@ public interface IAppointmentOps {
         long patientId,
         String date,
         String time,
-        String type,
+        int type,
         String reason,
         String doctorOrSpecialty,
         boolean isSpecialty

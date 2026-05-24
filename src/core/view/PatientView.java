@@ -7,6 +7,7 @@ import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.model.Administrator;
 import core.model.Patient;
+import core.model.Specialty;
 import core.model.User;
 import java.awt.Color;
 import javax.swing.JOptionPane;
@@ -803,25 +804,25 @@ public class PatientView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackPVActionPerformed
 
     private void btnRadioSpecialtyPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRadioSpecialtyPVActionPerformed
-//        if (btnRadioDoctorPV.isSelected()) {
-//            btnRadioDoctorPV.setSelected(false);
-//        }
-//
-//        inputSelectRequestPV.removeAllItems();
-//
-//        inputSelectRequestPV.addItem("Select one");
-//        for (Specialty spec : Specialty.values()) {
-//            inputSelectRequestPV.addItem(spec.toString().replaceAll("_", " & "));
-//        }
+        if (btnRadioDoctorPV.isSelected()) {
+            btnRadioDoctorPV.setSelected(false);
+        }
+
+        inputSelectRequestPV.removeAllItems();
+
+        inputSelectRequestPV.addItem("Select one");
+        for (Specialty spec : Specialty.values()) {
+            inputSelectRequestPV.addItem(spec.toString().replaceAll("_", " & "));
+        }
     }//GEN-LAST:event_btnRadioSpecialtyPVActionPerformed
 
     private void btnRadioDoctorPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRadioDoctorPVActionPerformed
-//        if (btnRadioSpecialtyPV.isSelected()) {
-//            btnRadioSpecialtyPV.setSelected(false);
-//        }
-//        inputSelectRequestPV.removeAllItems();
-//
-//        inputSelectRequestPV.addItem("Select one");
+        if (btnRadioSpecialtyPV.isSelected()) {
+            btnRadioSpecialtyPV.setSelected(false);
+        }
+        inputSelectRequestPV.removeAllItems();
+
+        inputSelectRequestPV.addItem("Select one");
 //        for (User doc : this.users) {
 //            if (doc instanceof Doctor) {
 //                inputSelectRequestPV.addItem(doc.getFirstname() + " " + doc.getLastname());
@@ -830,20 +831,20 @@ public class PatientView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRadioDoctorPVActionPerformed
 
     private void btnCreateRequestMediPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateRequestMediPVActionPerformed
-//        String appointDate = inputAppointDatePV.getText();
-//        LocalDate appointmentDate = LocalDate.of(Integer.parseInt(appointDate.substring(0, 4)), Integer.parseInt(appointDate.substring(5, 7)), Integer.parseInt(appointDate.substring(8)));
-//        LocalTime appointmentHour = LocalTime.of(Integer.parseInt(inputAppointTimePV.getText().substring(0, 2)), Integer.parseInt(inputAppointTimePV.getText().substring(3)));
-//        LocalDateTime Finally = LocalDateTime.of(appointmentDate, appointmentHour);
-//        String appointmentReason = inputTextAreaPV.getText();
-//        long docId = Long.parseLong(inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex()));
-//        Doctor doctor = null;
-//        for (User use : this.users) {
-//            if (use.getId() == docId) {
-//                doctor = (Doctor) use;
-//            }
-//        }
-//        boolean appointmentType = (inputSelectAppointTypePV.getSelectedIndex() == 0 ? null : (inputSelectAppointTypePV.getSelectedIndex() == 2));
-//        this.appointments.add(new Appointment(appointDate, patient, doctor, doctor.getSpecialty(), Finally, appointDate, appointmentType));
+        long patient_id = patient.getId();
+        String date = inputAppointDatePV.getText();
+        String time = inputAppointTimePV.getText();
+        String reason = inputTextAreaPV.getText();
+        var selected_id = inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex());
+        int type = inputSelectAppointTypePV.getSelectedIndex();
+        boolean isSpecialty = btnRadioSpecialtyPV.isSelected();
+
+        Response res = appointmentController.requestAppointment(patient_id, date, time, type, reason, selected_id, isSpecialty);
+        if (res.getStatus() == Status.CREATED) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment request creation successful", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnCreateRequestMediPVActionPerformed
 
 

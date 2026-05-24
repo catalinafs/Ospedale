@@ -4,18 +4,10 @@ import core.controllers.AppointmentController;
 import core.controllers.AuthController;
 import core.controllers.PatientController;
 import core.controllers.utils.Response;
-import core.controllers.utils.Status;
-import core.model.Administrator;
-import core.model.Appointment;
-import core.model.Doctor;
-import core.model.Hospitalization;
 import core.model.Patient;
 import core.model.User;
-import core.view.AdminView;
-import core.view.DoctorView;
 import core.view.MainView;
 import core.view.PatientView;
-import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.JFrame;
 

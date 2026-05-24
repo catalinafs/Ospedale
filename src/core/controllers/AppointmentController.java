@@ -26,12 +26,13 @@ import java.util.HashMap;
  *
  * @author briggoes
  */
-public class AppointmentController implements IAppointmentOps, IAppointmentQuery{
+public class AppointmentController implements IAppointmentOps, IAppointmentQuery {
+
     private final IAppointmentStorage appointmentStorage;
     private final IPatientStorage patientStorage;
     private final IDoctorStorage doctorStorage;
     private final IAppointmentValidator validator;
-    
+
     public AppointmentController(
             IAppointmentStorage appointmentStorage,
             IPatientStorage patientStorage,
@@ -43,65 +44,70 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         this.doctorStorage = doctorStorage;
         this.validator = validator;
     }
-    
+
     @Override
-    public Response requestAppointment(long patientId, String date, String time,
-            String type, String reason, String doctorOrSpecialty, boolean isSpecialty) {
-        Response error = validator.validateDateTime(date, time);
-        if (error != null) return error;
-        if (reason == null || reason.trim().isEmpty()) {
-            return new Response("Reason is required.", Status.BAD_REQUEST);
-        }
-        Patient patient = patientStorage.getPatient(patientId);
-        if (patient == null) {
-            return new Response("Patient not found.", Status.NOT_FOUND);
-        }
-        Doctor doctor = null;
-        Specialty specialty = null;
-        if (isSpecialty) {
-            try {
-                specialty = Specialty.valueOf(doctorOrSpecialty.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return new Response("Invalid specialty.", Status.BAD_REQUEST);
+    public Response requestAppointment(long patientId, String date, String time, int type, String reason, String doctorOrSpecialty, boolean isSpecialty) {
+        try {
+            Patient patient = patientStorage.getPatient(patientId);
+            if (patient == null) {
+                return new Response("Patient not found.", Status.NOT_FOUND);
             }
-            doctor = appointmentStorage.findAvailableDoctor(specialty, date, time);
-            if (doctor == null) {
-                return new Response("No doctor available with that specialty at the requested time.", Status.BAD_REQUEST);
+
+            Response error = validator.validateDateTime(date, time);
+            if (error != null) {
+                return error;
             }
-        } else {
-            try {
-                long doctorId = Long.parseLong(doctorOrSpecialty);
-                doctor = doctorStorage.getDoctor(doctorId);
+
+            if (reason == null || reason.trim().isEmpty()) {
+                return new Response("Reason is required.", Status.BAD_REQUEST);
+            }
+
+            Specialty specialty = null;
+            Doctor doctor = null;
+
+            if (isSpecialty) {
+                specialty = Specialty.valueOf(doctorOrSpecialty.toUpperCase().replace(" & ", "_"));
+                doctor = appointmentStorage.findAvailableDoctor(specialty, date, time);
+                if (doctor == null) {
+                    return new Response("No doctors available for that specialty at the given time.", Status.CONFLICT);
+                }
+            } else {
+                long docId = Long.parseLong(doctorOrSpecialty);
+                doctor = doctorStorage.getDoctor(docId);
                 if (doctor == null) {
                     return new Response("Doctor not found.", Status.NOT_FOUND);
                 }
-                if (!appointmentStorage.isDoctorAvailable(doctor.getId(), date, time)) {
-                    return new Response("Doctor is not available at the requested time.", Status.BAD_REQUEST);
+                if (!appointmentStorage.isDoctorAvailable(docId, date, time)) {
+                    return new Response("Doctor is unavaialbe at the given time.", Status.CONFLICT);
                 }
-            } catch (NumberFormatException e) {
-                return new Response("Invalid doctor ID.", Status.BAD_REQUEST);
             }
+
+            String appointmentId = appointmentStorage.generateAppointmentId(patientId);
+            LocalDateTime dateTime = LocalDateTime.of(
+                    LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"))
+            );
+            
+            Appointment appointment = new Appointment(
+                    appointmentId, patient, doctor, doctor.getSpecialty(),
+                    dateTime, reason, "consultation".equals(type)
+            );
+            
+            appointmentStorage.addAppointment(appointment);
+            patient.getAppointments().add(appointment);
+            doctor.getAppointments().add(appointment);
+            
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("appointmentId", appointmentId);
+            data.put("date", date);
+            data.put("time", time);
+            data.put("doctor", doctor.getFirstname() + " " + doctor.getLastname());
+            return new Response("Appointment requested successfully.", Status.CREATED, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }
-        String appointmentId = appointmentStorage.generateAppointmentId(patientId);
-        LocalDateTime dateTime = LocalDateTime.of(
-                LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"))
-        );
-        Appointment appointment = new Appointment(
-                appointmentId, patient, doctor, doctor.getSpecialty(),
-                dateTime, reason, "consultation".equals(type)
-        );
-        appointmentStorage.addAppointment(appointment);
-        patient.getAppointments().add(appointment);
-        doctor.getAppointments().add(appointment);
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("appointmentId", appointmentId);
-        data.put("date", date);
-        data.put("time", time);
-        data.put("doctor", doctor.getFirstname() + " " + doctor.getLastname());
-        return new Response("Appointment requested successfully.", Status.CREATED, data);
     }
-    
+
     @Override
     public Response acceptAppointment(String appointmentId, long doctorId) {
         Appointment appointment = appointmentStorage.getAppointment(appointmentId);
@@ -121,7 +127,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         appointment.setStatus(AppointmentStatus.PENDING);
         return new Response("Appointment accepted.", Status.OK);
     }
-    
+
     @Override
     public Response completeAppointment(String appointmentId, long doctorId) {
         Appointment appointment = appointmentStorage.getAppointment(appointmentId);
@@ -141,6 +147,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         appointment.setStatus(AppointmentStatus.COMPLETED);
         return new Response("Appointment completed.", Status.OK);
     }
+
     @Override
     public Response cancelAppointment(String appointmentId, long patientId) {
         Appointment appointment = appointmentStorage.getAppointment(appointmentId);
@@ -156,7 +163,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         appointment.setStatus(AppointmentStatus.CANCELED);
         return new Response("Appointment canceled.", Status.OK);
     }
-    
+
     @Override
     public Response rescheduleAppointment(String appointmentId, long doctorId, String newTime, String reason) {
         Appointment appointment = appointmentStorage.getAppointment(appointmentId);
@@ -172,7 +179,9 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         }
         String existingDate = appointment.getDatetime().toLocalDate().toString();
         Response timeError = validator.validateDateTime(existingDate, newTime);
-        if (timeError != null) return timeError;
+        if (timeError != null) {
+            return timeError;
+        }
         if (!appointmentStorage.isDoctorAvailable(doctorId, existingDate, newTime)) {
             return new Response("Doctor is not available at the new time.", Status.BAD_REQUEST);
         }
@@ -188,7 +197,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         data.put("newTime", newTime);
         return new Response("Appointment rescheduled.", Status.OK, data);
     }
-    
+
     @Override
     public Response getPatientAppointments(long patientId) {
         Patient patient = patientStorage.getPatient(patientId);
@@ -213,7 +222,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         result.put("appointments", appointmentList);
         return new Response("Appointments retrieved.", Status.OK, result);
     }
-    
+
     @Override
     public Response getDoctorAppointments(long doctorId) {
         Doctor doctor = doctorStorage.getDoctor(doctorId);
@@ -238,7 +247,7 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
         result.put("appointments", appointmentList);
         return new Response("Appointments retrieved.", Status.OK, result);
     }
-    
+
     @Override
     public Response getDoctorPending(long doctorId) {
         Doctor doctor = doctorStorage.getDoctor(doctorId);
