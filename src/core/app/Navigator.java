@@ -5,9 +5,12 @@ import core.controllers.AuthController;
 import core.controllers.DoctorController;
 import core.controllers.HospitalizationController;
 import core.controllers.PatientController;
+import core.controllers.utils.Response;
+import core.model.Administrator;
 import core.model.Doctor;
 import core.model.Patient;
 import core.model.User;
+import core.view.AdminView;
 import core.view.DoctorView;
 import core.view.MainView;
 import core.view.PatientView;
@@ -62,7 +65,19 @@ public final class Navigator implements INavigator {
     }
 
     public void showAdmin(User user) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (!(user instanceof Administrator admin)) {
+            throw new IllegalArgumentException("User is not an administrator.");
+        }
+        
+        hideCurrent();
+        AdminView adminView = new AdminView(
+                user.getId(),
+                appContext.getPatientController(),
+                appContext.getDoctorController(),
+                this
+        );
+        currentFrame = adminView;
+        adminView.setVisible(true);
     }
 
     public void showDoctor(User user) {
