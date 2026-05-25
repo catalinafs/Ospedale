@@ -9,10 +9,10 @@ import core.controllers.utils.Status;
 import core.controllers.validators.IDoctorValidator;
 import core.model.Doctor;
 import core.model.IDoctorStorage;
-import core.model.IUserStorage;
 import core.model.Specialty;
 import core.model.UserStorage;
 import core.model.persistence.IUserPersistence;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -48,6 +48,11 @@ public class DoctorController implements IDoctorController {
             if (error != null) return error;
             error = validator.validateLicence(licenceNumber);
             if (error != null) return error;
+            for (Doctor d : storage.getAllDoctors()) {
+                if (d.getLicenceNumber().equals(licenceNumber.trim())) {
+                    return new Response("Licence number already in use.", Status.CONFLICT);
+                }
+            }  
             error = validator.validateOffice(assignedOffice);
             if (error != null) return error;
             error = validator.validateUsername(username);
@@ -59,7 +64,7 @@ public class DoctorController implements IDoctorController {
             if (error != null) return error;
             Doctor doctor = new Doctor(id, username, firstname, lastname, password, specialty, licenceNumber, assignedOffice);
             storage.addDoctor(doctor);
-            persistence.save((UserStorage) storage);
+            persistence.save(UserStorage.getInstance());
             HashMap<String, Object> data = new HashMap<>();
             data.put("id", id);
             data.put("username", username);
@@ -117,6 +122,7 @@ public class DoctorController implements IDoctorController {
             if (!storage.updateDoctor(id, username, firstname, lastname, password, licenseNumber, assignedOffice)) {
                 return new Response("Doctor not found.", Status.NOT_FOUND);
             }
+            persistence.save(UserStorage.getInstance());
             Doctor updated = storage.getDoctor(id);
             HashMap<String, Object> data = new HashMap<>();
             data.put("id", id);
@@ -131,7 +137,23 @@ public class DoctorController implements IDoctorController {
     
     @Override
     public Response getDoctor(long id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            Doctor doctor = storage.getDoctor(id);
+            if (doctor == null) {
+                return new Response("Doctor not found.", Status.NOT_FOUND);
+            }
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("id", doctor.getId());
+            data.put("username", doctor.getUsername());
+            data.put("firstname", doctor.getFirstname());
+            data.put("lastname", doctor.getLastname());
+            data.put("specialty", doctor.getSpecialty());
+            data.put("licenceNumber", doctor.getLicenceNumber());
+            data.put("assignedOffice", doctor.getAssignedOffice());
+            return new Response("Doctor found.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @Override
@@ -150,6 +172,18 @@ public class DoctorController implements IDoctorController {
     
     @Override
     public Response getDoctorsBySpecialty(Specialty specialty) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            ArrayList<Doctor> filtered = new ArrayList<>();
+            for (Doctor d : storage.getAllDoctors()) {
+                if (d.getSpecialty() == specialty) {
+                    filtered.add(d);
+                }
+            }
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("doctors", filtered);
+            return new Response("Doctors found.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 }
