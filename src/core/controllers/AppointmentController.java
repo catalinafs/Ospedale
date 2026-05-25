@@ -66,6 +66,15 @@ public class AppointmentController implements IAppointmentController {
                 return new Response("Reason is required.", Status.BAD_REQUEST);
             }
 
+            if (type <= 0) {
+                return new Response("Appointment type is required.", Status.BAD_REQUEST);
+            }
+
+            if (doctorOrSpecialty == null || doctorOrSpecialty.trim().isEmpty()
+                    || "Select one".equals(doctorOrSpecialty)) {
+                return new Response("Please select a valid specialty or doctor.", Status.BAD_REQUEST);
+            }
+
             Specialty specialty = null;
             Doctor doctor = null;
 

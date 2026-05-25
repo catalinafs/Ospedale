@@ -870,22 +870,10 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
     }//GEN-LAST:event_btnRadioDoctorPVActionPerformed
 
     private void btnCreateRequestMediPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateRequestMediPVActionPerformed
-        if (!btnRadioSpecialtyPV.isSelected() && !btnRadioDoctorPV.isSelected()) {
-            JOptionPane.showMessageDialog(null, "Please select Specialty or Doctor.", "Oops..", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        String selected_id = inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex());
-        if (selected_id == null || selected_id.equals("Select one")) {
-            JOptionPane.showMessageDialog(null, "Please select a valid specialty or doctor.", "Oops..", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (inputSelectAppointTypePV.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Please select an appointment type.", "Oops..", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
         String date = inputAppointDatePV.getText();
         String time = inputAppointTimePV.getText();
         String reason = inputTextAreaPV.getText();
+        String selected_id = inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex());
         int type = inputSelectAppointTypePV.getSelectedIndex();
         boolean isSpecialty = btnRadioSpecialtyPV.isSelected();
 
