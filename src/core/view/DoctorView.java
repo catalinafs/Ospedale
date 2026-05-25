@@ -67,6 +67,12 @@ public class DoctorView extends javax.swing.JFrame {
             String fullname = String.valueOf(pat.get("fullname"));
             inputSelectPatientDV.addItem(fullname);
         }
+        
+        inputSelectPatientIDDV.removeAllItems();
+        inputSelectPatientIDDV.addItem("Select one");
+        for (HashMap<String, Object> pat : patients) {
+            inputSelectPatientIDDV.addItem(String.valueOf(pat.get("id")));
+        }
 
         Response res2 = appointmentController.getDoctorAppointments(user.getId());
         ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res2.getData().get("appointments");
