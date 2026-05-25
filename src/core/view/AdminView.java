@@ -1,31 +1,52 @@
 package core.view;
 
-import core.model.Appointment;
+import core.app.Navigator;
+import core.controllers.IDoctorController;
+import core.controllers.IPatientController;
+import core.controllers.utils.Response;
 import core.model.Doctor;
-import core.model.Hospitalization;
 import core.model.Patient;
 import core.model.Specialty;
 import core.model.User;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AdminView extends javax.swing.JFrame {
 
     private int x, y;
-    private ArrayList<User> users;
-    private ArrayList<Appointment> appointments;
-    private ArrayList<Hospitalization> hospitalizations;
-    private User user;
+    private long userId;
+    private IPatientController patientController;
+    private IDoctorController doctorController;
+    private Navigator navigator;
 
-    public AdminView(User user, ArrayList<User> users, ArrayList<Hospitalization> hospitalizations, ArrayList<Appointment> appointments) {
+    public AdminView(long userId, IPatientController patientController, IDoctorController doctorController, Navigator navigator) {
         initComponents();
-        this.user = user;
-        this.users = users;
-        this.hospitalizations = hospitalizations;
-        this.appointments = appointments;
-        
+        this.userId = userId;
+        this.patientController = patientController;
+        this.doctorController = doctorController;
+        this.navigator = navigator;
+
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
+
+        Response resPat = patientController.getAllPatients();
+        ArrayList<HashMap<String, Object>> patients = (ArrayList<HashMap<String, Object>>) resPat.getData().get("patients");
+        inputSelectPatientAV.removeAllItems();
+        inputSelectPatientAV.addItem("Select one");
+        for (HashMap<String, Object> pat : patients) {
+            String fullname = String.valueOf(pat.get("fullname"));
+            inputSelectPatientAV.addItem(fullname);
+        }
+
+        Response resDoc = doctorController.getAllDoctors();
+        ArrayList<HashMap<String, Object>> doctors = (ArrayList<HashMap<String, Object>>) resDoc.getData().get("doctors");
+        inputSelectDoctorAV.removeAllItems();
+        inputSelectDoctorAV.addItem("Select one");
+        for (HashMap<String, Object> doc : doctors) {
+            String fullname = String.valueOf(doc.get("fullname"));
+            inputSelectDoctorAV.addItem(fullname);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -414,22 +435,22 @@ public class AdminView extends javax.swing.JFrame {
         String password = inputPassAV.getText();
         String comPassword = inputPassConfirmAV.getText();
         Specialty specialty = Specialty.valueOf(spec.replaceAll(" &", "").replaceAll(" ", "_"));
-        if (password.equals(comPassword)) {
-            users.add(new Doctor(id, username, firstname, lastname, password, specialty, licenseNumber, assignedOffice));
-        }
+//        if (password.equals(comPassword)) {
+//            users.add(new Doctor(id, username, firstname, lastname, password, specialty, licenseNumber, assignedOffice));
+//        }
     }//GEN-LAST:event_btnSaveAVActionPerformed
 
     private void btnDoctorViewAVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoctorViewAVActionPerformed
         long idDoctor = Long.parseLong(inputSelectDoctorAV.getItemAt(inputSelectDoctorAV.getSelectedIndex()));
         Doctor temp = null;
-        for (User use : this.users) {
-            if (use.getId() == idDoctor) {
-                temp = (Doctor) user;
-            }
-        }
-        DoctorView doctor = new DoctorView(user, temp, users, hospitalizations, appointments);
-        this.setVisible(false);
-        doctor.setVisible(true);
+//        for (User use : this.users) {
+//            if (use.getId() == idDoctor) {
+//                temp = (Doctor) user;
+//            }
+//        }
+//        DoctorView doctor = new DoctorView(userId, temp, users, hospitalizations, appointments);
+//        this.setVisible(false);
+//        doctor.setVisible(true);
     }//GEN-LAST:event_btnDoctorViewAVActionPerformed
 
     private void btnLogoutAVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutAVActionPerformed
@@ -441,14 +462,14 @@ public class AdminView extends javax.swing.JFrame {
     private void btnPatientViewAVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPatientViewAVActionPerformed
         long idPatient = Long.parseLong(inputSelectDoctorAV.getItemAt(inputSelectDoctorAV.getSelectedIndex()));
         Patient temp = null;
-        for (User use : this.users) {
-            if (use.getId() == idPatient) {
-                temp = (Patient) user;
-            }
-        }
-        PatientView patient = new PatientView(user, temp, users, appointments, hospitalizations);
-        this.setVisible(false);
-        patient.setVisible(true);
+//        for (User use : this.users) {
+//            if (use.getId() == idPatient) {
+//                temp = (Patient) user;
+//            }
+//        }
+//        PatientView patient = new PatientView(userId, temp, users, appointments, hospitalizations);
+//        this.setVisible(false);
+//        patient.setVisible(true);
     }//GEN-LAST:event_btnPatientViewAVActionPerformed
 
 

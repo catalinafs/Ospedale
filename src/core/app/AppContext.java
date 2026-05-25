@@ -83,7 +83,8 @@ public final class AppContext {
                 patientController,
                 appointmentController,
                 doctorController,
-                hospitalizationController);
+                hospitalizationController
+        );
     }
 
     public HospitalizationController getHospitalizationController() {

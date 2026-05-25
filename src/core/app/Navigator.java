@@ -83,11 +83,13 @@ public final class Navigator {
         
         hideCurrent();
         AdminView adminView = new AdminView(
-                user,
-                users,
-                hospitalizations,
-                appointments
+                user.getId(),
+                appContext.getPatientController(),
+                appContext.getDoctorController(),
+                this
         );
+        currentFrame = adminView;
+        adminView.setVisible(true);
     }
 
     public void showDoctor(User user) {
