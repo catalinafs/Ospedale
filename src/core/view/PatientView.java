@@ -9,6 +9,7 @@ import core.controllers.IPatientController;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.model.Doctor;
+import core.model.IDataObserver;
 import core.model.RoomType;
 import core.model.Specialty;
 import java.awt.Color;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class PatientView extends javax.swing.JFrame {
+public class PatientView extends javax.swing.JFrame implements IDataObserver {
 
     private int x, y;
     private long userId;
@@ -800,6 +801,7 @@ public class PatientView extends javax.swing.JFrame {
         Response res = appointmentController.cancelAppointment(idAppointment, userId);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment cancellation succesful", JOptionPane.INFORMATION_MESSAGE);
+            inputSelectIDappointPV.setSelectedIndex(0);
             btnRefreshPVActionPerformed(null);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
@@ -820,6 +822,10 @@ public class PatientView extends javax.swing.JFrame {
         Response res = patientController.update(userId, username, firstname, lastname, password, comPassword, email, birth, gender, phone, address);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
+            inputFisrtnamePV.setText(""); inputLastnamePV.setText(""); inputBirthPV.setText("");
+            inputAddressPV.setText(""); inputPhonePV.setText(""); inputEmailPV.setText("");
+            inputUserPV.setText(""); inputPassPV.setText(""); inputPassConfirPV.setText("");
+            inputSelectGenderPV.setSelectedIndex(0);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
@@ -830,7 +836,7 @@ public class PatientView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLogoutPVActionPerformed
 
     private void btnBackPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackPVActionPerformed
-//        navigator.showAdmin(user);
+        navigator.showAdminView();
     }//GEN-LAST:event_btnBackPVActionPerformed
 
     private void btnRadioSpecialtyPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRadioSpecialtyPVActionPerformed
@@ -872,6 +878,9 @@ public class PatientView extends javax.swing.JFrame {
         Response res = appointmentController.requestAppointment(userId, date, time, type, reason, selected_id, isSpecialty);
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment request creation successful", JOptionPane.INFORMATION_MESSAGE);
+            inputAppointDatePV.setText(""); inputAppointTimePV.setText(""); inputTextAreaPV.setText("");
+            inputSelectAppointTypePV.setSelectedIndex(0);
+            inputSelectRequestPV.setSelectedIndex(0);
             btnRefreshPVActionPerformed(null);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
@@ -918,6 +927,14 @@ public class PatientView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCreateHospiPVActionPerformed
 
+    @Override
+    public void onDataChanged(String storageName) {
+        if ("AppointmentStorage".equals(storageName)) {
+            btnRefreshPVActionPerformed(null);
+        } else if ("HospitalizationStorage".equals(storageName)) {
+            btnRefreshPVActionPerformed(null);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBackPV;

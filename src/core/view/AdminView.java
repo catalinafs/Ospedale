@@ -4,11 +4,13 @@ import core.app.Navigator;
 import core.controllers.IDoctorController;
 import core.controllers.IPatientController;
 import core.controllers.utils.Response;
+import core.controllers.utils.Status;
 import core.model.Doctor;
 import core.model.Patient;
 import core.model.Specialty;
 import core.model.User;
 import java.awt.Color;
+import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,6 +21,8 @@ public class AdminView extends javax.swing.JFrame {
     private IPatientController patientController;
     private IDoctorController doctorController;
     private Navigator navigator;
+    private java.util.HashMap<String, Long> doctorNameToId = new java.util.HashMap<>();
+    private java.util.HashMap<String, Long> patientNameToId = new java.util.HashMap<>();
 
     public AdminView(long userId, IPatientController patientController, IDoctorController doctorController, Navigator navigator) {
         initComponents();
@@ -36,6 +40,8 @@ public class AdminView extends javax.swing.JFrame {
         inputSelectPatientAV.addItem("Select one");
         for (HashMap<String, Object> pat : patients) {
             String fullname = String.valueOf(pat.get("fullname"));
+            long id = Long.parseLong(String.valueOf(pat.get("id")));
+            patientNameToId.put(fullname, id);
             inputSelectPatientAV.addItem(fullname);
         }
 
@@ -45,6 +51,8 @@ public class AdminView extends javax.swing.JFrame {
         inputSelectDoctorAV.addItem("Select one");
         for (HashMap<String, Object> doc : doctors) {
             String fullname = String.valueOf(doc.get("fullname"));
+            long id = Long.parseLong(String.valueOf(doc.get("id")));
+            doctorNameToId.put(fullname, id);
             inputSelectDoctorAV.addItem(fullname);
         }
     }
@@ -427,49 +435,68 @@ public class AdminView extends javax.swing.JFrame {
     private void btnSaveAVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveAVActionPerformed
         String firstname = inputFirstnameAV.getText();
         String lastname = inputLastnameAV.getText();
-        long id = Long.parseLong(inputIDAV.getText());
+        String idStr = inputIDAV.getText();
         String spec = inputSelectSpecialtyAV.getItemAt(inputSelectSpecialtyAV.getSelectedIndex());
         String licenseNumber = inputLicenseAV.getText();
         String assignedOffice = inputAssignedOfficeAV.getText();
         String username = inputUserAV.getText();
         String password = inputPassAV.getText();
         String comPassword = inputPassConfirmAV.getText();
+        
+        if (spec.equals("Select one")) {
+            JOptionPane.showMessageDialog(null, "Please select a specialty.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         Specialty specialty = Specialty.valueOf(spec.replaceAll(" &", "").replaceAll(" ", "_"));
-//        if (password.equals(comPassword)) {
-//            users.add(new Doctor(id, username, firstname, lastname, password, specialty, licenseNumber, assignedOffice));
-//        }
+        Response res = doctorController.register(Long.parseLong(idStr), username, firstname, lastname, password, comPassword, specialty, licenseNumber, assignedOffice);
+        if (res.getStatus() == Status.CREATED) {
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
+            inputFirstnameAV.setText(""); inputLastnameAV.setText(""); inputIDAV.setText("");
+            inputLicenseAV.setText(""); inputAssignedOfficeAV.setText(""); inputUserAV.setText("");
+            inputPassAV.setText(""); inputPassConfirmAV.setText("");
+            inputSelectSpecialtyAV.setSelectedIndex(0);
+            Response resDoc = doctorController.getAllDoctors();
+            ArrayList<HashMap<String, Object>> doctors = (ArrayList<HashMap<String, Object>>) resDoc.getData().get("doctors");
+            inputSelectDoctorAV.removeAllItems();
+            inputSelectDoctorAV.addItem("Select one");
+            doctorNameToId.clear();
+            for (HashMap<String, Object> doc : doctors) {
+                String fullname = String.valueOf(doc.get("fullname"));
+                long id = Long.parseLong(String.valueOf(doc.get("id")));
+                doctorNameToId.put(fullname, id);
+                inputSelectDoctorAV.addItem(fullname);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnSaveAVActionPerformed
 
     private void btnDoctorViewAVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoctorViewAVActionPerformed
-        long idDoctor = Long.parseLong(inputSelectDoctorAV.getItemAt(inputSelectDoctorAV.getSelectedIndex()));
-        Doctor temp = null;
-//        for (User use : this.users) {
-//            if (use.getId() == idDoctor) {
-//                temp = (Doctor) user;
-//            }
-//        }
-//        DoctorView doctor = new DoctorView(userId, temp, users, hospitalizations, appointments);
-//        this.setVisible(false);
-//        doctor.setVisible(true);
+        String selected = inputSelectDoctorAV.getItemAt(inputSelectDoctorAV.getSelectedIndex());
+        if (selected == null || selected.equals("Select one")) {
+            JOptionPane.showMessageDialog(null, "Please select a doctor.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Long doctorId = doctorNameToId.get(selected);
+        if (doctorId != null) {
+            navigator.showDoctorById(doctorId);
+        }
     }//GEN-LAST:event_btnDoctorViewAVActionPerformed
 
     private void btnLogoutAVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutAVActionPerformed
-        //MainView login = new MainView();
-        this.setVisible(false);
-        //login.setVisible(true);
+        navigator.logout();
     }//GEN-LAST:event_btnLogoutAVActionPerformed
 
     private void btnPatientViewAVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPatientViewAVActionPerformed
-        long idPatient = Long.parseLong(inputSelectDoctorAV.getItemAt(inputSelectDoctorAV.getSelectedIndex()));
-        Patient temp = null;
-//        for (User use : this.users) {
-//            if (use.getId() == idPatient) {
-//                temp = (Patient) user;
-//            }
-//        }
-//        PatientView patient = new PatientView(userId, temp, users, appointments, hospitalizations);
-//        this.setVisible(false);
-//        patient.setVisible(true);
+        String selected = inputSelectPatientAV.getItemAt(inputSelectPatientAV.getSelectedIndex());
+        if (selected == null || selected.equals("Select one")) {
+            JOptionPane.showMessageDialog(null, "Please select a patient.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Long patientId = patientNameToId.get(selected);
+        if (patientId != null) {
+            navigator.showPatientById(patientId);
+        }
     }//GEN-LAST:event_btnPatientViewAVActionPerformed
 
 

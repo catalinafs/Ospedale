@@ -3,5 +3,46 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group/>
+        <group name="Proyectos">
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/view/AdminView.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/view/DoctorView.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/PatientController.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/DoctorController.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/AppointmentController.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/persistence/UserPersistence.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/IPrescription.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/IAppointmentStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/utils/Status.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/validators/DoctorValidator.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/validators/AppointmentValidator.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/Prescription.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/Appointment.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/AppointmentStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/app/AppContext.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/IHospitalizationOps.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/HospitalizationController.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/app/Navigator.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/HospitalizationStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/IDoctorController.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/persistence/UserSerializer.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/persistence/DoctorSerializer.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/persistence/IDeserializer.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/persistence/IUserPersistence.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/UserStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/IUserStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/main/Main.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/DoctorStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/IDoctorStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/IAppointmentOps.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/AuthController.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/IAuthController.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/Hospitalization.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/Doctor.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/HospitalizationStatus.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/User.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/IHospitalizationStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/model/PatientStorage.java</file>
+            <file>file:/home/daniel/Proyectos/Ospedale/src/core/controllers/IAppointmentQuery.java</file>
+        </group>
     </open-files>
 </project-private>

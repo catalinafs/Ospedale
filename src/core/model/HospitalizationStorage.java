@@ -15,6 +15,7 @@ public class HospitalizationStorage implements IHospitalizationStorage{
     private static HospitalizationStorage instance = null;
     private static ArrayList<Hospitalization> hospitalizations = new ArrayList<>();
     private static HashMap<Long, Integer> counters = new HashMap<>();
+    private ArrayList<IDataObserver> observers = new ArrayList<>();
     
     private HospitalizationStorage() {}
     
@@ -23,6 +24,18 @@ public class HospitalizationStorage implements IHospitalizationStorage{
             instance = new HospitalizationStorage();
         }
         return instance;
+    }
+    
+    @Override
+    public void subscribe(IDataObserver observer) {
+        observers.add(observer);
+    }
+    
+    @Override
+    public void notifyObservers() {
+        for (IDataObserver o : observers) {
+            o.onDataChanged("HospitalizationStorage");
+        }
     }
     
     @Override
@@ -50,6 +63,8 @@ public class HospitalizationStorage implements IHospitalizationStorage{
     
     @Override
     public boolean addHospitalization(Hospitalization hospitalization) {
-        return hospitalizations.add(hospitalization);
+        boolean result = hospitalizations.add(hospitalization);
+        notifyObservers();
+        return result;
     }
 }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author daniel
  */
-public interface IHospitalizationStorage{
+public interface IHospitalizationStorage extends IDataObservable {
     public Hospitalization getHospitalization(String id);
     public ArrayList<Hospitalization> getAllHospitalizations();
     public String generateHospitalizationId(long patientId);

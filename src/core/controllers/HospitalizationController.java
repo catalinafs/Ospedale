@@ -104,6 +104,7 @@ public class HospitalizationController implements IHospitalizationController {
                 return new Response("Hospitalization cannot be approved.", Status.BAD_REQUEST);
             }
             hosp.setStatus(HospitalizationStatus.ONGOING);
+            hospitalizationStorage.notifyObservers();
             HashMap<String, Object> data = new HashMap<>();
             data.put("hospitalizationId", hospitalizationId);
             data.put("status", HospitalizationStatus.ONGOING);
@@ -131,6 +132,7 @@ public class HospitalizationController implements IHospitalizationController {
                 return new Response("Hospitalization cannot be rejected.", Status.BAD_REQUEST);
             }
             hosp.setStatus(HospitalizationStatus.CANCELED);
+            hospitalizationStorage.notifyObservers();
             HashMap<String, Object> data = new HashMap<>();
             data.put("hospitalizationId", hospitalizationId);
             data.put("status", HospitalizationStatus.CANCELED);
@@ -158,6 +160,7 @@ public class HospitalizationController implements IHospitalizationController {
                 return new Response("Hospitalization must be ONGOING to complete.", Status.BAD_REQUEST);
             }
             hosp.setStatus(HospitalizationStatus.COMPLETED);
+            hospitalizationStorage.notifyObservers();
             HashMap<String, Object> data = new HashMap<>();
             data.put("hospitalizationId", hospitalizationId);
             data.put("status", HospitalizationStatus.COMPLETED);
@@ -170,14 +173,23 @@ public class HospitalizationController implements IHospitalizationController {
     @Override
     public Response getPatientHospitalizations(long patientId) {
         try {
-            ArrayList<Hospitalization> patientHosp = new ArrayList<>();
+            ArrayList<HashMap<String, Object>> serialized = new ArrayList<>();
             for (Hospitalization h : hospitalizationStorage.getAllHospitalizations()) {
                 if (h.getPatient().getId() == patientId) {
-                    patientHosp.add(h);
+                    HashMap<String, Object> item = new HashMap<>();
+                    item.put("id", h.getId());
+                    item.put("patientId", h.getPatient().getId());
+                    item.put("doctor", h.getDoctor().getFirstname() + " " + h.getDoctor().getLastname());
+                    item.put("date", h.getDate().toString());
+                    item.put("reason", h.getReason());
+                    item.put("roomType", h.getRoomType().toString());
+                    item.put("observations", h.getObservations());
+                    item.put("status", h.getStatus().toString());
+                    serialized.add(item);
                 }
             }
             HashMap<String, Object> data = new HashMap<>();
-            data.put("hospitalizations", patientHosp);
+            data.put("hospitalizations", serialized);
             return new Response("Hospitalizations found.", Status.OK, data);
         } catch (Exception e) {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);

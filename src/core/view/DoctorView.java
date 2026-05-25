@@ -19,6 +19,7 @@ import core.controllers.PatientController;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.model.Doctor;
+import core.model.IDataObserver;
 import core.model.User;
 
 import java.awt.Color;
@@ -32,7 +33,7 @@ import javax.swing.table.DefaultTableModel;
  * @author jjlora
  * @author edangulo
  */
-public class DoctorView extends javax.swing.JFrame {
+public class DoctorView extends javax.swing.JFrame implements IDataObserver {
 
     private int x, y;
     private long userId;
@@ -1223,7 +1224,7 @@ public class DoctorView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLogoutDVActionPerformed
 
     private void btnBackDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackDVActionPerformed
-//        navigator.showAdmin(user);
+        navigator.showAdminView();
     }//GEN-LAST:event_btnBackDVActionPerformed
 
     private void btnCancelHospiDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelHospiDVActionPerformed
@@ -1242,9 +1243,10 @@ public class DoctorView extends javax.swing.JFrame {
             return;
         }
 
-        Response res = hospitalizationController.rejectHospitalization(hospId, doctor.getId());
+        Response res = hospitalizationController.rejectHospitalization(hospId, userId);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
+            inputSelectRequestDV.setSelectedIndex(0);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
@@ -1278,8 +1280,13 @@ public class DoctorView extends javax.swing.JFrame {
         String date = inputDateEntryDV.getText();
         String observations = inputHospiObservDV.getText();
 
+        Response docRes = doctorController.getDoctor(userId);
+        String doctorName = "";
+        if (docRes.getStatus() == Status.OK) {
+            doctorName = docRes.getData().get("firstname") + " " + docRes.getData().get("lastname");
+        }
         Response res = hospitalizationController.requestHospitalization(
-            patientId, reason, doctor.getFirstname() + " " + doctor.getLastname(), date, "IMC", observations);
+            patientId, reason, doctorName, date, "IMC", observations);
 
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -1340,6 +1347,7 @@ public class DoctorView extends javax.swing.JFrame {
         Response res = appointmentController.acceptAppointment(idAppointment, userId);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment acception successful", JOptionPane.INFORMATION_MESSAGE);
+            inputSelectAppointIDDV.setSelectedIndex(0);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
@@ -1354,6 +1362,9 @@ public class DoctorView extends javax.swing.JFrame {
         Response res = appointmentController.completeAppointment(idAppointment, userId, diagnosis, followUp, recommendedTrea, observations);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment completion successful", JOptionPane.INFORMATION_MESSAGE);
+            inputCompleteAppointDV.setSelectedIndex(0);
+            inputTextAreaDiagnosisDV.setText(""); inputTextAreaObservDV.setText("");
+            inputTextAreaRecoTreatDV.setText(""); inputTextAreaFollowIndicDV.setText("");
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
@@ -1379,7 +1390,7 @@ public class DoctorView extends javax.swing.JFrame {
             String additionalInstructions = (String) model.getValueAt(row, 5);
             String frequency = (String) model.getValueAt(row, 6);
             Response res = prescriptionController.prescribeMedication(
-                appointmentId, doctor.getId(), medicationName, dose,
+                appointmentId, userId, medicationName, dose,
                 administrationRoute, treatmentDuration, additionalInstructions, frequency
             );
             if (res.getStatus() != Status.CREATED) {
@@ -1437,17 +1448,35 @@ public class DoctorView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddPresMediDVActionPerformed
 
     private void btnAcceptResMediAppointDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcceptResMediAppointDVActionPerformed
-        String idAppointment = inputSelectAppointIDDV.getItemAt(inputSelectAppointIDDV.getSelectedIndex());
+        String idAppointment = inputSelectAppointDV.getItemAt(inputSelectAppointDV.getSelectedIndex());
         String reasonChangeTime = inputReasonAppointDV.getText();
         String newTime = inputNewTimeAppointDV.getText();
         Response res = appointmentController.rescheduleAppointment(idAppointment, userId, newTime, reasonChangeTime);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment reschedule successful", JOptionPane.INFORMATION_MESSAGE);
+            inputSelectAppointDV.setSelectedIndex(0);
+            inputNewTimeAppointDV.setText(""); inputReasonAppointDV.setText("");
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAcceptResMediAppointDVActionPerformed
 
+    @Override
+    public void onDataChanged(String storageName) {
+        if ("AppointmentStorage".equals(storageName)) {
+            if (btnRadioTotalAppointDV.isSelected()) {
+                btnRadioTotalAppointDVActionPerformed(null);
+            } else if (btnRadioPendingAppointDV.isSelected()) {
+                btnRadioPendingAppointDVActionPerformed(null);
+            }
+        } else if ("HospitalizationStorage".equals(storageName)) {
+            if (btnRadioTotalAppointDV.isSelected()) {
+                btnRadioTotalAppointDVActionPerformed(null);
+            } else if (btnRadioPendingAppointDV.isSelected()) {
+                btnRadioPendingAppointDVActionPerformed(null);
+            }
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAcceptResMediAppointDV;

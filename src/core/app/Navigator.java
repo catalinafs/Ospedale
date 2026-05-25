@@ -8,6 +8,7 @@ import core.controllers.PatientController;
 import core.controllers.utils.Response;
 import core.model.Administrator;
 import core.model.Doctor;
+import core.model.IDataObserver;
 import core.model.Patient;
 import core.model.User;
 import core.view.AdminView;
@@ -20,6 +21,7 @@ public final class Navigator implements INavigator {
 
     private final AppContext appContext;
     private JFrame currentFrame;
+    private User adminUser;
 
     public Navigator(AppContext appContext) {
         this.appContext = appContext;
@@ -69,6 +71,7 @@ public final class Navigator implements INavigator {
             throw new IllegalArgumentException("User is not an administrator.");
         }
         
+        this.adminUser = user;
         hideCurrent();
         AdminView adminView = new AdminView(
                 user.getId(),
@@ -82,7 +85,7 @@ public final class Navigator implements INavigator {
 
     public void showDoctor(User user) {
         if (!(user instanceof Doctor doctor)) {
-            throw new IllegalArgumentException("User is not a patient.");
+            throw new IllegalArgumentException("User is not a doctor.");
         }
 
         hideCurrent();
@@ -96,6 +99,8 @@ public final class Navigator implements INavigator {
                 appContext.getPrescriptionController(),
                 this
         );
+        appContext.getAppointmentStorage().subscribe(doctorView);
+        appContext.getHospitalizationStorage().subscribe(doctorView);
         currentFrame = doctorView;
         doctorView.setVisible(true);
     }
@@ -115,6 +120,8 @@ public final class Navigator implements INavigator {
                 appContext.getHospitalizationController(),
                 this
         );
+        appContext.getAppointmentStorage().subscribe(patientView);
+        appContext.getHospitalizationStorage().subscribe(patientView);
         currentFrame = patientView;
         patientView.setVisible(true);
     }
@@ -122,6 +129,28 @@ public final class Navigator implements INavigator {
     public void logout() {
         appContext.getAuthController().logout();
         showMain();
+    }
+
+    public void showAdminView() {
+        if (adminUser != null) {
+            showAdmin(adminUser);
+        } else {
+            showMain();
+        }
+    }
+
+    public void showDoctorById(long doctorId) {
+        User user = appContext.getUserStorage().get(doctorId);
+        if (user instanceof Doctor) {
+            showDoctor(user);
+        }
+    }
+
+    public void showPatientById(long patientId) {
+        User user = appContext.getUserStorage().get(patientId);
+        if (user instanceof Patient) {
+            showPatient(user);
+        }
     }
 
     private void hideCurrent() {
