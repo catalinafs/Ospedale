@@ -25,6 +25,7 @@ public final class Navigator implements INavigator {
     private final AppContext appContext;
     private JFrame currentFrame;
     private User adminUser;
+    private boolean adminMode;
 
     public Navigator(AppContext appContext) {
         this.appContext = appContext;
@@ -34,7 +35,12 @@ public final class Navigator implements INavigator {
         return appContext;
     }
 
+    public boolean isAdminMode() {
+        return adminMode;
+    }
+
     public void showMain() {
+        adminMode = false;
         hideCurrent();
         MainView mainView = new MainView(
                 appContext.getPatientController(),
@@ -55,6 +61,7 @@ public final class Navigator implements INavigator {
             return;
         }
 
+        adminMode = "admin".equals(type);
         hideCurrent();
 
         switch (type) {
@@ -75,6 +82,7 @@ public final class Navigator implements INavigator {
         }
         
         this.adminUser = user;
+        this.adminMode = true;
         hideCurrent();
         AdminView adminView = new AdminView(
                 user.getId(),
@@ -94,7 +102,6 @@ public final class Navigator implements INavigator {
         hideCurrent();
         DoctorView doctorView = new DoctorView(
                 user.getId(),
-                appContext.getAuthController(),
                 appContext.getPatientController(),
                 appContext.getDoctorController(),
                 appContext.getAppointmentController(),
@@ -116,7 +123,6 @@ public final class Navigator implements INavigator {
         hideCurrent();
         PatientView patientView = new PatientView(
                 user.getId(),
-                appContext.getAuthController(),
                 appContext.getPatientController(),
                 appContext.getDoctorController(),
                 appContext.getAppointmentController(),
@@ -145,6 +151,7 @@ public final class Navigator implements INavigator {
     public void showDoctorById(long doctorId) {
         User user = appContext.getUserStorage().get(doctorId);
         if (user instanceof Doctor) {
+            adminMode = true;
             showDoctor(user);
         }
     }
@@ -152,6 +159,7 @@ public final class Navigator implements INavigator {
     public void showPatientById(long patientId) {
         User user = appContext.getUserStorage().get(patientId);
         if (user instanceof Patient) {
+            adminMode = true;
             showPatient(user);
         }
     }

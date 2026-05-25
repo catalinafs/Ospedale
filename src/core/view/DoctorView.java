@@ -5,12 +5,7 @@
 package core.view;
 
 import core.app.INavigator;
-import core.app.Navigator;
-import core.controllers.AppointmentController;
-import core.controllers.DoctorController;
-import core.controllers.HospitalizationController;
 import core.controllers.IAppointmentController;
-import core.controllers.IAuthController;
 import core.controllers.IDoctorController;
 import core.controllers.IHospitalizationController;
 import core.controllers.IPatientController;
@@ -38,7 +33,6 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
     private int x, y;
     private long userId;
     private INavigator navigator;
-    private IAuthController authController;
     private IDoctorController doctorController;
     private IPatientController patientController;
     private IAppointmentController appointmentController;
@@ -46,7 +40,6 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
     private IPrescription prescriptionController;
 
     public DoctorView(long userId,
-            IAuthController authController,
             IPatientController patientController,
             IDoctorController doctorController,
             IAppointmentController appointmentController,
@@ -55,7 +48,6 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
             INavigator navigator) {
         initComponents();
         this.userId = userId;
-        this.authController = authController;
         this.patientController = patientController;
         this.doctorController = doctorController;
         this.appointmentController = appointmentController;
@@ -63,20 +55,14 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         this.prescriptionController = prescriptionController;
         this.navigator = navigator;
 
-        Response res = authController.userIsOfType("ADMIN", userId);
-        if (res.getStatus() == 200) {
-            boolean isAdmin = (boolean) res.getData().get("matches");
-            btnBackDV.setVisible(isAdmin);
-        } else {
-            navigator.showMain();
-        }
+        btnBackDV.setVisible(navigator.isAdminMode());
 
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
 
         btnRadioTotalAppointDVActionPerformed(null);
 
-        res = patientController.getAllPatients();
+        Response res = patientController.getAllPatients();
         ArrayList<HashMap<String, Object>> patients = (ArrayList<HashMap<String, Object>>) res.getData().get("patients");
         inputSelectPatientDV.removeAllItems();
         inputSelectPatientDV.addItem("Select one");

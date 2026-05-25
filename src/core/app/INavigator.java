@@ -25,4 +25,6 @@ public interface INavigator {
     public void showAdminView();
     public void showDoctorById(long doctorId);
     public void showPatientById(long patientId);
+    
+    public boolean isAdminMode();
 }

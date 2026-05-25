@@ -5,7 +5,7 @@ package core.view;
 
 import core.app.INavigator;
 import core.controllers.IAppointmentController;
-import core.controllers.IAuthController;
+import core.controllers.IAppointmentController;
 import core.controllers.IDoctorController;
 import core.controllers.IHospitalizationController;
 import core.controllers.IPatientController;
@@ -26,14 +26,12 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
     private int x, y;
     private long userId;
     private INavigator navigator;
-    private IAuthController authController;
     private IPatientController patientController;
     private IDoctorController doctorController;
     private IAppointmentController appointmentController;
     private IHospitalizationController hospitalizationController;
 
     public PatientView(long userId,
-            IAuthController authController,
             IPatientController patientController,
             IDoctorController doctorController,
             IAppointmentController appointmentController,
@@ -41,20 +39,13 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
             INavigator navigator) {
         initComponents();
         this.userId = userId;
-        this.authController = authController;
         this.patientController = patientController;
         this.doctorController = doctorController;
         this.appointmentController = appointmentController;
         this.hospitalizationController = hospitalizationController;
         this.navigator = navigator;
 
-        Response res = authController.userIsOfType("ADMIN", userId);
-        if (res.getStatus() == 200) {
-            boolean isAdmin = (boolean) res.getData().get("matches");
-            btnBackPV.setVisible(isAdmin);
-        } else {
-            navigator.showMain();
-        }
+        btnBackPV.setVisible(navigator.isAdminMode());
 
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
