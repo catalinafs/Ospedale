@@ -31,4 +31,5 @@ public interface IHospitalizationOps {
     Response rejectHospitalization(String hospitalizationId, long doctorId);
     Response completeFromAppointment(String appointmentId, long doctorId, String hospitalizationId);
     Response getPatientHospitalizations(long patientId);
+    Response getDoctorHospitalizations(long doctorId);
 }

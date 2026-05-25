@@ -80,9 +80,12 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         ArrayList<HashMap<String, Object>> patients = (ArrayList<HashMap<String, Object>>) res.getData().get("patients");
         inputSelectPatientDV.removeAllItems();
         inputSelectPatientDV.addItem("Select one");
+        inputSelectPatientIDDV.removeAllItems();
+        inputSelectPatientIDDV.addItem("Select one");
         for (HashMap<String, Object> pat : patients) {
             String fullname = String.valueOf(pat.get("fullname"));
             inputSelectPatientDV.addItem(fullname);
+            inputSelectPatientIDDV.addItem(String.valueOf(pat.get("id")));
         }
 
         Response res2 = appointmentController.getDoctorAppointments(userId);
@@ -101,6 +104,16 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         inputSelectAppointPresMediDV.addItem("Select one");
         for (HashMap<String, Object> appt : appointments) {
             inputSelectAppointPresMediDV.addItem(String.valueOf(appt.get("id")));
+        }
+
+        Response resHosp = hospitalizationController.getDoctorHospitalizations(userId);
+        if (resHosp.getStatus() == Status.OK) {
+            ArrayList<HashMap<String, Object>> hospis = (ArrayList<HashMap<String, Object>>) resHosp.getData().get("hospitalizations");
+            inputSelectRequestDV.removeAllItems();
+            inputSelectRequestDV.addItem("Select one");
+            for (HashMap<String, Object> h : hospis) {
+                inputSelectRequestDV.addItem(String.valueOf(h.get("id")));
+            }
         }
     }
 
@@ -1213,6 +1226,9 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         Response res = doctorController.update(userId, username, firstname, lastname, password, comPassword, specialty, licenseNumber, assignedOffice);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
+            inputFirstnameDV.setText(""); inputLastnameDV.setText(""); inputLicenseDV.setText("");
+            inputAssignedOfficeDV.setText(""); inputUserDV.setText(""); inputPassDV.setText("");
+            inputPassConfirDV.setText(""); inputSpecialtyDV.setSelectedIndex(0);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }

@@ -1,3 +1,6 @@
+/**
+ * @author daniel
+ */
 package core.view;
 
 import core.app.INavigator;
@@ -925,6 +928,8 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
         Response res = hospitalizationController.requestHospitalization(userId, reason, doctor_fullName, admission_date, room_type, observations);
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Hospitalization request creation successful", JOptionPane.INFORMATION_MESSAGE);
+            inputTextAreaHospiReasPV.setText(""); inputSelectAttendingPV.setSelectedIndex(0);
+            inputEstiDatePV.setText(""); inputSelectDesiredRoomPV.setSelectedIndex(0); inputTextAreaObservPV.setText("");
             btnRefreshPVActionPerformed(null);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);

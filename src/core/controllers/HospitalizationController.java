@@ -2,6 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/**
+ * @author daniel
+ */
 package core.controllers;
 
 import core.controllers.utils.Response;
@@ -206,6 +209,31 @@ public class HospitalizationController implements IHospitalizationController {
             data.put("hospitalizationId", hospitalizationId);
             data.put("status", HospitalizationStatus.COMPLETED);
             return new Response("Hospitalization completed successfully.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public Response getDoctorHospitalizations(long doctorId) {
+        try {
+            ArrayList<HashMap<String, Object>> serialized = new ArrayList<>();
+            for (Hospitalization h : hospitalizationStorage.getAllHospitalizations()) {
+                if (h.getDoctor().getId() == doctorId) {
+                    HashMap<String, Object> item = new HashMap<>();
+                    item.put("id", h.getId());
+                    item.put("patient", h.getPatient().getFirstname() + " " + h.getPatient().getLastname());
+                    item.put("date", h.getDate().toString());
+                    item.put("reason", h.getReason());
+                    item.put("roomType", h.getRoomType().toString());
+                    item.put("observations", h.getObservations());
+                    item.put("status", h.getStatus().toString());
+                    serialized.add(item);
+                }
+            }
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hospitalizations", serialized);
+            return new Response("Hospitalizations found.", Status.OK, data);
         } catch (Exception e) {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }

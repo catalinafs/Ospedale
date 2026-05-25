@@ -1,3 +1,6 @@
+/**
+ * @author daniel
+ */
 package core.controllers;
 
 import core.controllers.utils.Response;
