@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *
  * @author briggoes
  */
-public class AppointmentController implements IAppointmentOps, IAppointmentQuery {
+public class AppointmentController implements IAppointmentController {
 
     private final IAppointmentStorage appointmentStorage;
     private final IPatientStorage patientStorage;
