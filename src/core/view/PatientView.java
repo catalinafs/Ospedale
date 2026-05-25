@@ -57,10 +57,13 @@ public class PatientView extends javax.swing.JFrame {
 
         btnRefreshPVActionPerformed(null);
 
-        for (Object doc : doctorController.getAllDoctors().getData().values().toArray()) {
-            if (doc instanceof Doctor doc_) {
-                inputSelectAttendingPV.addItem(doc_.getFirstname() + " " + doc_.getLastname());
-            }
+        Response resDoc = doctorController.getAllDoctors();
+        ArrayList<HashMap<String, Object>> doctors = (ArrayList<HashMap<String, Object>>) resDoc.getData().get("doctors");
+        inputSelectAttendingPV.removeAllItems();
+        inputSelectAttendingPV.addItem("Select one");
+        for (HashMap<String, Object> doc : doctors) {
+            String fullname = String.valueOf(doc.get("fullname"));
+            inputSelectAttendingPV.addItem(fullname);
         }
 
         for (RoomType type : RoomType.values()) {
