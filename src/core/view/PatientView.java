@@ -850,13 +850,14 @@ public class PatientView extends javax.swing.JFrame {
         if (btnRadioSpecialtyPV.isSelected()) {
             btnRadioSpecialtyPV.setSelected(false);
         }
-        inputSelectRequestPV.removeAllItems();
 
+        Response resDoc = doctorController.getAllDoctors();
+        ArrayList<HashMap<String, Object>> doctors = (ArrayList<HashMap<String, Object>>) resDoc.getData().get("doctors");
+        inputSelectRequestPV.removeAllItems();
         inputSelectRequestPV.addItem("Select one");
-        for (Object doc : doctorController.getAllDoctors().getData().values().toArray()) {
-            if (doc instanceof Doctor doc_) {
-                inputSelectRequestPV.addItem(doc_.getFirstname() + " " + doc_.getLastname());
-            }
+        for (HashMap<String, Object> doc : doctors) {
+            String fullname = String.valueOf(doc.get("fullname"));
+            inputSelectRequestPV.addItem(fullname);
         }
 
     }//GEN-LAST:event_btnRadioDoctorPVActionPerformed
@@ -904,12 +905,12 @@ public class PatientView extends javax.swing.JFrame {
 
     private void btnCreateHospiPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateHospiPVActionPerformed
         String reason = inputTextAreaHospiReasPV.getText();
-        String doctor_id = inputSelectAttendingPV.getItemAt(inputSelectAttendingPV.getSelectedIndex());
+        String doctor_fullName = inputSelectAttendingPV.getItemAt(inputSelectAttendingPV.getSelectedIndex());
         String admission_date = inputEstiDatePV.getText();
         String room_type = inputSelectDesiredRoomPV.getItemAt(inputSelectDesiredRoomPV.getSelectedIndex());
         String observations = inputTextAreaObservPV.getText();
 
-        Response res = hospitalizationController.requestHospitalization(userId, reason, doctor_id, admission_date, room_type, observations);
+        Response res = hospitalizationController.requestHospitalization(userId, reason, doctor_fullName, admission_date, room_type, observations);
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Hospitalization request creation successful", JOptionPane.INFORMATION_MESSAGE);
             btnRefreshPVActionPerformed(null);

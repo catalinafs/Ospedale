@@ -108,7 +108,7 @@ public final class AppContext {
         IPatientController patientController = new PatientController(patientStorage, new PatientValidator(), persistence);
         IAppointmentController appointmentController = new AppointmentController(appointmentStorage, patientStorage, doctorStorage, new AppointmentValidator());
         IDoctorController doctorController = new DoctorController(doctorStorage, new DoctorValidator(), persistence);
-        IHospitalizationController hospitalizationController = new HospitalizationController(hospitalizationStorage, patientStorage, doctorStorage, new HospitalizationValidator());
+        IHospitalizationController hospitalizationController = new HospitalizationController(hospitalizationStorage, patientStorage, doctorStorage, appointmentStorage, new HospitalizationValidator());
         IPrescription prescriptionController = new PrescriptionController(appointmentStorage, doctorStorage, new PrescriptionValidator());
         
         return new AppContext(

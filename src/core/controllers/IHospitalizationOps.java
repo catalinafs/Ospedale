@@ -14,12 +14,19 @@ public interface IHospitalizationOps {
     Response requestHospitalization(
         long patientId,
         String reason,
-        String doctorId,
+        long doctorId,
         String estimatedDate,
         String roomType,
         String observations
     );
-    
+        Response requestHospitalization(
+        long patientId,
+        String reason,
+        String doctorFullName,
+        String estimatedDate,
+        String roomType,
+        String observations
+    );
     Response approveHospitalization(String hospitalizationId, long doctorId);
     Response rejectHospitalization(String hospitalizationId, long doctorId);
     Response completeFromAppointment(String appointmentId, long doctorId, String hospitalizationId);

@@ -35,14 +35,55 @@ public class HospitalizationController implements IHospitalizationController {
     private final IHospitalizationValidator validator;
 
     public HospitalizationController(IHospitalizationStorage hospitalizationStorage,
-            IPatientStorage patientStorage, IDoctorStorage doctorStorage, 
-            IAppointmentStorage appointmentStorage, 
+            IPatientStorage patientStorage, IDoctorStorage doctorStorage,
+            IAppointmentStorage appointmentStorage,
             IHospitalizationValidator validator) {
         this.hospitalizationStorage = hospitalizationStorage;
         this.patientStorage = patientStorage;
         this.doctorStorage = doctorStorage;
         this.appointmentStorage = appointmentStorage;
         this.validator = validator;
+    }
+
+    @Override
+    public Response requestHospitalization(long patientId, String reason, long doctorId, String estimatedDate, String roomType, String observations) {
+        try {
+            Patient patient = patientStorage.getPatient(patientId);
+            if (patient == null) {
+                return new Response("Patient not found.", Status.NOT_FOUND);
+            }
+            if (reason == null || reason.trim().isEmpty()) {
+                return new Response("Reason is required.", Status.BAD_REQUEST);
+            }
+            Doctor doctor = doctorStorage.getDoctor(doctorId);
+            if (doctor == null) {
+                return new Response("Doctor not found.", Status.NOT_FOUND);
+            }
+            Response error = validator.validateAdmissionDate(estimatedDate);
+            if (error != null) {
+                return error;
+            }
+            LocalDate date = LocalDate.parse(estimatedDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            if (observations == null || observations.trim().isEmpty()) {
+                return new Response("observations is required.", Status.BAD_REQUEST);
+            }
+            RoomType room = RoomType.valueOf(roomType);
+
+            String hosp_id = hospitalizationStorage.generateHospitalizationId(patientId);
+            Hospitalization hosp = new Hospitalization(hosp_id, patient, doctor, date, reason, room, observations);
+
+            hospitalizationStorage.addHospitalization(hosp);
+            patient.setHospitalization(hosp);
+            doctor.getHospitalizations().add(hosp);
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hospitalizationId", hosp_id);
+            data.put("date", date);
+            data.put("doctor", doctor.getFirstname() + " " + doctor.getLastname());
+            return new Response("Hospitalization requested successfully.", Status.CREATED, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

@@ -278,7 +278,7 @@ public class AppointmentController implements IAppointmentController {
             data.put("patient", appt.getPatient().getFirstname() + " " + appt.getPatient().getLastname());
             data.put("specialty", appt.getSpecialty().toString());
             data.put("status", appt.getStatus().toString());
-            data.put("reason", appt.getReason());
+            data.put("type", appt.isType() ? "In-Person" : "Remote");
             appointmentList.add(data);
         }
 
@@ -308,7 +308,7 @@ public class AppointmentController implements IAppointmentController {
             data.put("patient", appt.getPatient().getFirstname() + " " + appt.getPatient().getLastname());
             data.put("specialty", appt.getSpecialty().toString());
             data.put("status", appt.getStatus().toString());
-            data.put("reason", appt.getReason());
+            data.put("type", appt.isType() ? "In-Person" : "Remote");
             appointmentList.add(data);
         }
 

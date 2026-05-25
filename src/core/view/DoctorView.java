@@ -86,7 +86,7 @@ public class DoctorView extends javax.swing.JFrame {
 
         Response res2 = appointmentController.getDoctorAppointments(userId);
         ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res2.getData().get("appointments");
-        
+
         inputSelectAppointIDDV.removeAllItems();
         inputSelectAppointDV.removeAllItems();
         inputCompleteAppointDV.removeAllItems();
@@ -95,7 +95,7 @@ public class DoctorView extends javax.swing.JFrame {
             inputSelectAppointDV.addItem(String.valueOf(appt.get("id")));
             inputCompleteAppointDV.addItem(String.valueOf(appt.get("id")));
         }
-        
+
         inputSelectAppointPresMediDV.removeAllItems();
         inputSelectAppointPresMediDV.addItem("Select one");
         for (HashMap<String, Object> appt : appointments) {
@@ -1188,15 +1188,14 @@ public class DoctorView extends javax.swing.JFrame {
         Response res = appointmentController.getDoctorPending(userId);
         ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res.getData().get("appointments");
 
-        for (HashMap<String, Object> appt : appointments) {
+        for (HashMap<String, Object> app : appointments) {
             model.addRow(new Object[]{
-                appt.get("id"),
-                appt.get("date"),
-                appt.get("time"),
-                appt.get("patient"),
-                appt.get("specialty"),
-                appt.get("status"),
-                appt.get("reason")
+                app.get("id"),
+                app.get("date") + " " + app.get("time"),
+                app.get("patient"),
+                app.get("specialty"),
+                app.get("type"),
+                app.get("status")
             });
         }
     }//GEN-LAST:event_btnRadioPendingAppointDVActionPerformed
@@ -1234,15 +1233,17 @@ public class DoctorView extends javax.swing.JFrame {
 //                }
 //            }
 //        }
-        if (!btnRadioRequestDV.isSelected()) return;
-    
+        if (!btnRadioRequestDV.isSelected()) {
+            return;
+        }
+
         String hospId = inputSelectRequestDV.getItemAt(inputSelectRequestDV.getSelectedIndex());
         if (hospId == null || hospId.equals("Select one")) {
             JOptionPane.showInternalMessageDialog(null, "Please select a hospitalization.", "Oops..", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Response res = hospitalizationController.rejectHospitalization(hospId, doctor.getId());
+        Response res = hospitalizationController.rejectHospitalization(hospId, userId);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -1266,8 +1267,10 @@ public class DoctorView extends javax.swing.JFrame {
 //                }
 //            }
 //        }
-        if (!btnRadioPatientIDDV.isSelected()) return;
-    
+        if (!btnRadioPatientIDDV.isSelected()) {
+            return;
+        }
+
         String patientIdStr = inputSelectPatientIDDV.getItemAt(inputSelectPatientIDDV.getSelectedIndex());
         if (patientIdStr == null || patientIdStr.equals("Select one")) {
             JOptionPane.showInternalMessageDialog(null, "Please select a patient.", "Oops..", JOptionPane.ERROR_MESSAGE);
@@ -1279,7 +1282,7 @@ public class DoctorView extends javax.swing.JFrame {
         String observations = inputHospiObservDV.getText();
 
         Response res = hospitalizationController.requestHospitalization(
-            patientId, reason, doctor.getFirstname() + " " + doctor.getLastname(), date, "IMC", observations);
+                patientId, reason, userId, date, "IMC", observations);
 
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -1322,16 +1325,17 @@ public class DoctorView extends javax.swing.JFrame {
         Response res = appointmentController.getDoctorAppointments(userId);
         ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res.getData().get("appointments");
 
-        for (HashMap<String, Object> appt : appointments) {
-            model.addRow(new Object[]{
-                appt.get("id"),
-                appt.get("date"),
-                appt.get("time"),
-                appt.get("patient"),
-                appt.get("specialty"),
-                appt.get("status"),
-                appt.get("reason")
-            });
+        for (HashMap<String, Object> app : appointments) {
+            model.addRow(
+                    new Object[]{
+                        app.get("id"),
+                        app.get("date") + " " + app.get("time"),
+                        app.get("patient"),
+                        app.get("specialty"),
+                        app.get("type"),
+                        app.get("status")
+                    }
+            );
         }
     }//GEN-LAST:event_btnRadioTotalAppointDVActionPerformed
 
@@ -1370,7 +1374,9 @@ public class DoctorView extends javax.swing.JFrame {
         int processedCount = 0;
         for (int row = 0; row < rowCount; row++) {
             String appointmentId = (String) model.getValueAt(row, 0);
-            if (appointmentId == null || appointmentId.trim().isEmpty()) continue;
+            if (appointmentId == null || appointmentId.trim().isEmpty()) {
+                continue;
+            }
             processedCount++;
             String medicationName = (String) model.getValueAt(row, 1);
             String dose = (String) model.getValueAt(row, 2);
@@ -1379,11 +1385,13 @@ public class DoctorView extends javax.swing.JFrame {
             String additionalInstructions = (String) model.getValueAt(row, 5);
             String frequency = (String) model.getValueAt(row, 6);
             Response res = prescriptionController.prescribeMedication(
-                appointmentId, doctor.getId(), medicationName, dose,
-                administrationRoute, treatmentDuration, additionalInstructions, frequency
+                    appointmentId, userId, medicationName, dose,
+                    administrationRoute, treatmentDuration, additionalInstructions, frequency
             );
             if (res.getStatus() != Status.CREATED) {
-                if (summary.length() > 0) summary.append("\n");
+                if (summary.length() > 0) {
+                    summary.append("\n");
+                }
                 summary.append("- ").append(medicationName).append(": ").append(res.getMessage());
             }
         }
