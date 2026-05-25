@@ -24,6 +24,7 @@ public class AppointmentStorage implements IAppointmentStorage{
     private final IDoctorStorage doctorStorage;
     private ArrayList<Appointment> appointments = new ArrayList<>();
     private HashMap<Long, Integer> counters = new HashMap<>();
+    private ArrayList<IDataObserver> observers = new ArrayList<>();
     
     private AppointmentStorage(IDoctorStorage doctorStorage) {
         this.doctorStorage = doctorStorage;
@@ -34,6 +35,18 @@ public class AppointmentStorage implements IAppointmentStorage{
             instance = new AppointmentStorage(doctorStorage);
         }
         return instance;
+    }
+    
+    @Override
+    public void subscribe(IDataObserver observer) {
+        observers.add(observer);
+    }
+    
+    @Override
+    public void notifyObservers() {
+        for (IDataObserver o : observers) {
+            o.onDataChanged("AppointmentStorage");
+        }
     }
     
     @Override
@@ -92,6 +105,8 @@ public class AppointmentStorage implements IAppointmentStorage{
     
     @Override
     public boolean addAppointment(Appointment appointment) {
-        return appointments.add(appointment);
+        boolean result = appointments.add(appointment);
+        notifyObservers();
+        return result;
     }
 }

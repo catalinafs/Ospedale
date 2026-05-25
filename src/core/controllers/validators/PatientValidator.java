@@ -19,7 +19,7 @@ public class PatientValidator implements IPatientValidator {
         if (gender == 0) {
             return new Response("Gender is required.", Status.BAD_REQUEST);
         }
-        if (gender != 0 && gender != 1) {
+        if (gender != 1 && gender != 2) {
             return new Response("Gender is invalid.", Status.BAD_REQUEST);
         }
         return null;

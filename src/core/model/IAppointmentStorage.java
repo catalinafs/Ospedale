@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author daniel
  */
-public interface IAppointmentStorage {
+public interface IAppointmentStorage extends IDataObservable {
     public Appointment getAppointment(String id);
     public ArrayList<Appointment> getAllAppointments();
     public boolean isDoctorAvailable(long doctorId, String date, String time);

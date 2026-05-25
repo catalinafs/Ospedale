@@ -21,4 +21,8 @@ public interface INavigator {
     
     public void logout();
     public void openAfterLogin(Object type, Object id);
+    
+    public void showAdminView();
+    public void showDoctorById(long doctorId);
+    public void showPatientById(long patientId);
 }

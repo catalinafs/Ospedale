@@ -125,6 +125,7 @@ public class AppointmentController implements IAppointmentController {
             return new Response("Appointment cannot be accepted.", Status.BAD_REQUEST);
         }
         appointment.setStatus(AppointmentStatus.PENDING);
+        appointmentStorage.notifyObservers();
         return new Response("Appointment accepted.", Status.OK);
     }
 
@@ -151,6 +152,7 @@ public class AppointmentController implements IAppointmentController {
         appointment.setRecommendedTreatment(recommendedTreatment);
         appointment.setObservations(observations);
 
+        appointmentStorage.notifyObservers();
         return new Response("Appointment completed.", Status.OK);
     }
 
@@ -168,6 +170,7 @@ public class AppointmentController implements IAppointmentController {
                 return new Response("Cannot cancel a completed appointment.", Status.BAD_REQUEST);
             }
             appointment.setStatus(AppointmentStatus.CANCELED);
+            appointmentStorage.notifyObservers();
             return new Response("Appointment canceled.", Status.OK);
         } catch (Exception e) {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
@@ -202,6 +205,7 @@ public class AppointmentController implements IAppointmentController {
         LocalTime newLocalTime = LocalTime.parse(newTime, DateTimeFormatter.ofPattern("HH:mm"));
         LocalDateTime newDateTime = appointment.getDatetime().with(newLocalTime);
         appointment.setDatetime(newDateTime);
+        appointmentStorage.notifyObservers();
         HashMap<String, Object> data = new HashMap<>();
         data.put("oldTime", oldTime);
         data.put("newTime", newTime);
