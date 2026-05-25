@@ -443,7 +443,7 @@ public class AdminView extends javax.swing.JFrame {
         if (spec.equals("Select one")) {
             return;
         }
-        Specialty specialty = Specialty.valueOf(spec.replaceAll(" &", "").replaceAll(" ", "_"));
+        Specialty specialty = Specialty.valueOf(spec.replaceAll(" &", "").replaceAll(" ", "_").toUpperCase());
         Response res = doctorController.register(Long.parseLong(idStr), username, firstname, lastname, password, comPassword, specialty, licenseNumber, assignedOffice);
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
