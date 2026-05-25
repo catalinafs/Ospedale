@@ -5,6 +5,8 @@ import core.controllers.utils.Status;
 import core.controllers.validators.IPatientValidator;
 import core.model.IPatientStorage;
 import core.model.Patient;
+import core.model.UserStorage;
+import core.model.persistence.IUserPersistence;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,10 +15,12 @@ public class PatientController implements IPatientController {
 
     private final IPatientStorage storage;
     private final IPatientValidator validator;
+    private final IUserPersistence persistence;
 
-    public PatientController(IPatientStorage storage, IPatientValidator validator) {
+    public PatientController(IPatientStorage storage, IPatientValidator validator, IUserPersistence persistence) {
         this.storage = storage;
         this.validator = validator;
+        this.persistence = persistence;
     }
 
     @Override
@@ -75,10 +79,13 @@ public class PatientController implements IPatientController {
 
             Patient patient = new Patient(id, username, firstname, lastname, password,
                     email, birthdate, gender, phone, address);
-
+            
             if (!storage.addPatient(patient)) {
                 return new Response("Patient id already exists.", Status.CONFLICT);
             }
+            
+            persistence.save(UserStorage.getInstance());
+            
             HashMap<String, Object> data = new HashMap<>();
             data.put("id", patient.getId());
             data.put("username", patient.getUsername());
@@ -186,6 +193,8 @@ public class PatientController implements IPatientController {
                     address)) {
                 return new Response("Patient not found.", Status.NOT_FOUND);
             }
+            
+            persistence.save(UserStorage.getInstance());
 
             Patient updated = storage.getPatient(id);
             HashMap<String, Object> data = new HashMap<>();
