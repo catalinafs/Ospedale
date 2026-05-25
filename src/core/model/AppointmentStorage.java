@@ -72,7 +72,7 @@ public class AppointmentStorage implements IAppointmentStorage{
         LocalTime newEndTime = newTime.plusMinutes(15);
 
         for (Appointment a : appointments) {
-            if (a.getDoctor().getId() == doctorId) {
+            if (a.getDoctor() != null && a.getDoctor().getId() == doctorId) {
                 String aDate = a.getDatetime().toLocalDate().toString();
                 if (aDate.equals(date)) {
                     LocalTime existingStart = a.getDatetime().toLocalTime();

@@ -21,6 +21,7 @@ public interface IDoctorStorage{
             String firstname, 
             String lastname, 
             String password, 
+            String specialty,
             String licenceNumber, 
             String assignedOffice
     );

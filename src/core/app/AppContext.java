@@ -105,9 +105,9 @@ public final class AppContext {
         persistence.load(userStorage);
         
         IAuthController authController = new AuthController(userStorage);
-        IPatientController patientController = new PatientController(patientStorage, new PatientValidator(), persistence);
+        IPatientController patientController = new PatientController(patientStorage, new PatientValidator(), persistence, userStorage);
         IAppointmentController appointmentController = new AppointmentController(appointmentStorage, patientStorage, doctorStorage, new AppointmentValidator());
-        IDoctorController doctorController = new DoctorController(doctorStorage, new DoctorValidator(), persistence);
+        IDoctorController doctorController = new DoctorController(doctorStorage, new DoctorValidator(), persistence, userStorage);
         IHospitalizationController hospitalizationController = new HospitalizationController(hospitalizationStorage, patientStorage, doctorStorage, appointmentStorage, new HospitalizationValidator());
         IPrescription prescriptionController = new PrescriptionController(appointmentStorage, doctorStorage, new PrescriptionValidator());
         

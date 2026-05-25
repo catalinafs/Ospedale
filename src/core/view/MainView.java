@@ -418,7 +418,7 @@ public class MainView extends javax.swing.JFrame {
             Object idObj = data.get("id");
             navigator.openAfterLogin(typeObj, idObj);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnEnterMVActionPerformed
 
@@ -437,9 +437,9 @@ public class MainView extends javax.swing.JFrame {
 
         Response res = patientController.register(id, user, firstname, lastname, password, comPassword, email, birth, gender, phone, address);
         if (res.getStatus() == Status.CREATED) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Registration successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Registration successful", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnSaveRegisMVActionPerformed
 

@@ -61,7 +61,8 @@ public class DoctorStorage implements IDoctorStorage {
 
     @Override
     public boolean updateDoctor(long id, String username, String firstname,
-            String lastname, String password, String licenceNumber, String assignedOffice) {
+            String lastname, String password, String specialty,
+            String licenceNumber, String assignedOffice) {
         Doctor doctor = getDoctor(id);
         if (doctor == null) {
             return false;
@@ -81,6 +82,10 @@ public class DoctorStorage implements IDoctorStorage {
 
         if (password != null && !password.trim().isEmpty()) {
             doctor.setPassword(password);
+        }
+
+        if (specialty != null && !specialty.trim().isEmpty()) {
+            doctor.setSpecialty(Specialty.valueOf(specialty));
         }
 
         if (licenceNumber != null && !licenceNumber.trim().isEmpty()) {

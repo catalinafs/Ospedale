@@ -12,8 +12,8 @@ import core.controllers.utils.Status;
 import core.controllers.validators.IDoctorValidator;
 import core.model.Doctor;
 import core.model.IDoctorStorage;
+import core.model.IUserStorage;
 import core.model.Specialty;
-import core.model.UserStorage;
 import core.model.persistence.IUserPersistence;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,11 +26,13 @@ public class DoctorController implements IDoctorController {
     private final IDoctorStorage storage;
     private final IDoctorValidator validator;
     private final IUserPersistence persistence;
+    private final IUserStorage userStorage;
     
-    public DoctorController(IDoctorStorage storage, IDoctorValidator validator, IUserPersistence persistence) {
+    public DoctorController(IDoctorStorage storage, IDoctorValidator validator, IUserPersistence persistence, IUserStorage userStorage) {
         this.storage = storage;
         this.validator = validator;
         this.persistence = persistence;
+        this.userStorage = userStorage;
     }
     
     @Override
@@ -67,7 +69,7 @@ public class DoctorController implements IDoctorController {
             if (error != null) return error;
             Doctor doctor = new Doctor(id, username, firstname, lastname, password, specialty, licenceNumber, assignedOffice);
             storage.addDoctor(doctor);
-            persistence.save(UserStorage.getInstance());
+            persistence.save(userStorage);
             HashMap<String, Object> data = new HashMap<>();
             data.put("id", id);
             data.put("username", username);
@@ -122,10 +124,10 @@ public class DoctorController implements IDoctorController {
                     return error;
                 }
             }
-            if (!storage.updateDoctor(id, username, firstname, lastname, password, licenseNumber, assignedOffice)) {
+            if (!storage.updateDoctor(id, username, firstname, lastname, password, specialty, licenseNumber, assignedOffice)) {
                 return new Response("Doctor not found.", Status.NOT_FOUND);
             }
-            persistence.save(UserStorage.getInstance());
+            persistence.save(userStorage);
             Doctor updated = storage.getDoctor(id);
             HashMap<String, Object> data = new HashMap<>();
             data.put("id", id);

@@ -20,6 +20,7 @@ import core.model.User;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -60,6 +61,14 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
 
+        ButtonGroup appointGroup = new ButtonGroup();
+        appointGroup.add(btnRadioTotalAppointDV);
+        appointGroup.add(btnRadioPendingAppointDV);
+
+        ButtonGroup hospGroup = new ButtonGroup();
+        hospGroup.add(btnRadioRequestDV);
+        hospGroup.add(btnRadioPatientIDDV);
+
         btnRadioTotalAppointDVActionPerformed(null);
 
         Response res = patientController.getAllPatients();
@@ -74,33 +83,7 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
             inputSelectPatientIDDV.addItem(String.valueOf(pat.get("id")));
         }
 
-        Response res2 = appointmentController.getDoctorAppointments(userId);
-        ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res2.getData().get("appointments");
-
-        inputSelectAppointIDDV.removeAllItems();
-        inputSelectAppointDV.removeAllItems();
-        inputCompleteAppointDV.removeAllItems();
-        for (HashMap<String, Object> appt : appointments) {
-            inputSelectAppointIDDV.addItem(String.valueOf(appt.get("id")));
-            inputSelectAppointDV.addItem(String.valueOf(appt.get("id")));
-            inputCompleteAppointDV.addItem(String.valueOf(appt.get("id")));
-        }
-
-        inputSelectAppointPresMediDV.removeAllItems();
-        inputSelectAppointPresMediDV.addItem("Select one");
-        for (HashMap<String, Object> appt : appointments) {
-            inputSelectAppointPresMediDV.addItem(String.valueOf(appt.get("id")));
-        }
-
-        Response resHosp = hospitalizationController.getDoctorHospitalizations(userId);
-        if (resHosp.getStatus() == Status.OK) {
-            ArrayList<HashMap<String, Object>> hospis = (ArrayList<HashMap<String, Object>>) resHosp.getData().get("hospitalizations");
-            inputSelectRequestDV.removeAllItems();
-            inputSelectRequestDV.addItem("Select one");
-            for (HashMap<String, Object> h : hospis) {
-                inputSelectRequestDV.addItem(String.valueOf(h.get("id")));
-            }
-        }
+        refreshComboBoxes();
     }
 
     /**
@@ -1203,7 +1186,7 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
     private void btnSavedModifyDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavedModifyDVActionPerformed
         String firstname = inputFirstnameDV.getText();
         String lastname = inputLastnameDV.getText();
-        String specialty = inputSpecialtyDV.getItemAt(inputSpecialtyDV.getSelectedIndex());
+        String specialty = inputSpecialtyDV.getSelectedIndex() == 0 ? "" : inputSpecialtyDV.getItemAt(inputSpecialtyDV.getSelectedIndex());
         String licenseNumber = inputLicenseDV.getText();
         String assignedOffice = inputAssignedOfficeDV.getText();
         String username = inputUserDV.getText();
@@ -1211,12 +1194,12 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         String comPassword = inputPassConfirDV.getText();
         Response res = doctorController.update(userId, username, firstname, lastname, password, comPassword, specialty, licenseNumber, assignedOffice);
         if (res.getStatus() == Status.OK) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
             inputFirstnameDV.setText(""); inputLastnameDV.setText(""); inputLicenseDV.setText("");
             inputAssignedOfficeDV.setText(""); inputUserDV.setText(""); inputPassDV.setText("");
             inputPassConfirDV.setText(""); inputSpecialtyDV.setSelectedIndex(0);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnSavedModifyDVActionPerformed
 
@@ -1242,16 +1225,16 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
 
         String hospId = inputSelectRequestDV.getItemAt(inputSelectRequestDV.getSelectedIndex());
         if (hospId == null || hospId.equals("Select one")) {
-            JOptionPane.showInternalMessageDialog(null, "Please select a hospitalization.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please select a hospitalization.", "Oops..", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         Response res = hospitalizationController.rejectHospitalization(hospId, userId);
         if (res.getStatus() == Status.OK) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
             inputSelectRequestDV.setSelectedIndex(0);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCancelHospiDVActionPerformed
 
@@ -1277,7 +1260,7 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
 
         String patientIdStr = inputSelectPatientIDDV.getItemAt(inputSelectPatientIDDV.getSelectedIndex());
         if (patientIdStr == null || patientIdStr.equals("Select one")) {
-            JOptionPane.showInternalMessageDialog(null, "Please select a patient.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please select a patient.", "Oops..", JOptionPane.ERROR_MESSAGE);
             return;
         }
         long patientId = Long.parseLong(patientIdStr);
@@ -1294,12 +1277,12 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
                 patientId, reason, doctorName, date, "IMC", observations);
 
         if (res.getStatus() == Status.CREATED) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
             inputTextAreaReasHospiDV.setText("");
             inputDateEntryDV.setText("");
             inputHospiObservDV.setText("");
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnGenerateHospiDVActionPerformed
 
@@ -1352,10 +1335,10 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         String idAppointment = inputSelectAppointIDDV.getItemAt(inputSelectAppointIDDV.getSelectedIndex());
         Response res = appointmentController.acceptAppointment(idAppointment, userId);
         if (res.getStatus() == Status.OK) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment acception successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Appointment acception successful", JOptionPane.INFORMATION_MESSAGE);
             inputSelectAppointIDDV.setSelectedIndex(0);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAppointIDDVActionPerformed
 
@@ -1367,12 +1350,12 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         String followUp = inputTextAreaFollowIndicDV.getText();
         Response res = appointmentController.completeAppointment(idAppointment, userId, diagnosis, followUp, recommendedTrea, observations);
         if (res.getStatus() == Status.OK) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment completion successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Appointment completion successful", JOptionPane.INFORMATION_MESSAGE);
             inputCompleteAppointDV.setSelectedIndex(0);
             inputTextAreaDiagnosisDV.setText(""); inputTextAreaObservDV.setText("");
             inputTextAreaRecoTreatDV.setText(""); inputTextAreaFollowIndicDV.setText("");
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCompletDVActionPerformed
 
@@ -1380,7 +1363,7 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
         int rowCount = model.getRowCount();
         if (rowCount == 0) {
-            JOptionPane.showInternalMessageDialog(null, "No medications to prescribe.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No medications to prescribe.", "Oops..", JOptionPane.ERROR_MESSAGE);
             return;
         }
         StringBuilder summary = new StringBuilder();
@@ -1416,11 +1399,11 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         inputAdditInstrucPresMediDV.setText("");
         inputFrecuenPresMediDV.setText("");
         if (processedCount == 0) {
-            JOptionPane.showInternalMessageDialog(null, "No medications to prescribe.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No medications to prescribe.", "Oops..", JOptionPane.ERROR_MESSAGE);
         } else if (summary.length() == 0) {
-            JOptionPane.showInternalMessageDialog(null, "All medications prescribed successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "All medications prescribed successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showInternalMessageDialog(null, "Some medications failed:\n" + summary.toString(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Some medications failed:\n" + summary.toString(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnPrescribePresMediDVActionPerformed
 
@@ -1444,7 +1427,7 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
 //        }
         DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
         if (inputSelectAppointPresMediDV.getSelectedIndex() == 0) {
-            JOptionPane.showInternalMessageDialog(null, "Please select an appointment.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please select an appointment.", "Oops..", JOptionPane.ERROR_MESSAGE);
             return;
         }
         String appointmentId = inputSelectAppointPresMediDV.getItemAt(inputSelectAppointPresMediDV.getSelectedIndex());
@@ -1463,16 +1446,47 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
         String newTime = inputNewTimeAppointDV.getText();
         Response res = appointmentController.rescheduleAppointment(idAppointment, userId, newTime, reasonChangeTime);
         if (res.getStatus() == Status.OK) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment reschedule successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Appointment reschedule successful", JOptionPane.INFORMATION_MESSAGE);
             inputSelectAppointDV.setSelectedIndex(0);
             inputNewTimeAppointDV.setText(""); inputReasonAppointDV.setText("");
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAcceptResMediAppointDVActionPerformed
 
+    private void refreshComboBoxes() {
+        Response res2 = appointmentController.getDoctorAppointments(userId);
+        ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res2.getData().get("appointments");
+
+        inputSelectAppointIDDV.removeAllItems();
+        inputSelectAppointDV.removeAllItems();
+        inputCompleteAppointDV.removeAllItems();
+        for (HashMap<String, Object> appt : appointments) {
+            inputSelectAppointIDDV.addItem(String.valueOf(appt.get("id")));
+            inputSelectAppointDV.addItem(String.valueOf(appt.get("id")));
+            inputCompleteAppointDV.addItem(String.valueOf(appt.get("id")));
+        }
+
+        inputSelectAppointPresMediDV.removeAllItems();
+        inputSelectAppointPresMediDV.addItem("Select one");
+        for (HashMap<String, Object> appt : appointments) {
+            inputSelectAppointPresMediDV.addItem(String.valueOf(appt.get("id")));
+        }
+
+        Response resHosp = hospitalizationController.getDoctorHospitalizations(userId);
+        if (resHosp.getStatus() == Status.OK) {
+            ArrayList<HashMap<String, Object>> hospis = (ArrayList<HashMap<String, Object>>) resHosp.getData().get("hospitalizations");
+            inputSelectRequestDV.removeAllItems();
+            inputSelectRequestDV.addItem("Select one");
+            for (HashMap<String, Object> h : hospis) {
+                inputSelectRequestDV.addItem(String.valueOf(h.get("id")));
+            }
+        }
+    }
+
     @Override
     public void onDataChanged(String storageName) {
+        refreshComboBoxes();
         if ("AppointmentStorage".equals(storageName)) {
             if (btnRadioTotalAppointDV.isSelected()) {
                 btnRadioTotalAppointDVActionPerformed(null);

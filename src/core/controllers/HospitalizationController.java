@@ -11,6 +11,7 @@ import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.controllers.validators.IHospitalizationValidator;
 import core.model.Appointment;
+import core.model.AppointmentStatus;
 import core.model.Doctor;
 import core.model.Hospitalization;
 import core.model.HospitalizationStatus;
@@ -209,6 +210,36 @@ public class HospitalizationController implements IHospitalizationController {
             data.put("hospitalizationId", hospitalizationId);
             data.put("status", HospitalizationStatus.COMPLETED);
             return new Response("Hospitalization completed successfully.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public Response createFromAppointment(String appointmentId, long doctorId, String reason, String roomType, String observations) {
+        try {
+            Appointment appointment = appointmentStorage.getAppointment(appointmentId);
+            if (appointment == null) {
+                return new Response("Appointment not found.", Status.NOT_FOUND);
+            }
+            if (appointment.getDoctor().getId() != doctorId) {
+                return new Response("You are not the doctor of this appointment.", Status.UNAUTHORIZED);
+            }
+            if (reason == null || reason.trim().isEmpty()) {
+                return new Response("Reason is required.", Status.BAD_REQUEST);
+            }
+            appointment.setStatus(AppointmentStatus.COMPLETED);
+            Doctor doctor = appointment.getDoctor();
+            Patient patient = appointment.getPatient();
+            RoomType room = RoomType.valueOf(roomType);
+            String hospId = hospitalizationStorage.generateHospitalizationId(patient.getId());
+            Hospitalization hosp = new Hospitalization(hospId, patient, doctor, LocalDate.now(), reason, room, observations, HospitalizationStatus.ONGOING);
+            hospitalizationStorage.addHospitalization(hosp);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hospitalizationId", hospId);
+            data.put("patient", patient.getFirstname() + " " + patient.getLastname());
+            data.put("status", HospitalizationStatus.ONGOING.toString());
+            return new Response("Patient sent to hospitalization successfully. Appointment completed.", Status.CREATED, data);
         } catch (Exception e) {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }

@@ -5,7 +5,6 @@ package core.view;
 
 import core.app.INavigator;
 import core.controllers.IAppointmentController;
-import core.controllers.IAppointmentController;
 import core.controllers.IDoctorController;
 import core.controllers.IHospitalizationController;
 import core.controllers.IPatientController;
@@ -18,6 +17,7 @@ import core.model.Specialty;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -49,6 +49,10 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
 
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
+
+        ButtonGroup requestGroup = new ButtonGroup();
+        requestGroup.add(btnRadioSpecialtyPV);
+        requestGroup.add(btnRadioDoctorPV);
 
         btnRefreshPVActionPerformed(null);
 
@@ -797,11 +801,11 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
         String idAppointment = inputSelectIDappointPV.getItemAt(inputSelectIDappointPV.getSelectedIndex());
         Response res = appointmentController.cancelAppointment(idAppointment, userId);
         if (res.getStatus() == Status.OK) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment cancellation succesful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Appointment cancellation succesful", JOptionPane.INFORMATION_MESSAGE);
             inputSelectIDappointPV.setSelectedIndex(0);
             btnRefreshPVActionPerformed(null);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCancelAppointPVActionPerformed
 
@@ -818,13 +822,13 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
         String comPassword = inputPassConfirPV.getText();
         Response res = patientController.update(userId, username, firstname, lastname, password, comPassword, email, birth, gender, phone, address);
         if (res.getStatus() == Status.OK) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
             inputFisrtnamePV.setText(""); inputLastnamePV.setText(""); inputBirthPV.setText("");
             inputAddressPV.setText(""); inputPhonePV.setText(""); inputEmailPV.setText("");
             inputUserPV.setText(""); inputPassPV.setText(""); inputPassConfirPV.setText("");
             inputSelectGenderPV.setSelectedIndex(0);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnSavePVActionPerformed
 
@@ -866,22 +870,34 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
     }//GEN-LAST:event_btnRadioDoctorPVActionPerformed
 
     private void btnCreateRequestMediPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateRequestMediPVActionPerformed
+        if (!btnRadioSpecialtyPV.isSelected() && !btnRadioDoctorPV.isSelected()) {
+            JOptionPane.showMessageDialog(null, "Please select Specialty or Doctor.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String selected_id = inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex());
+        if (selected_id == null || selected_id.equals("Select one")) {
+            JOptionPane.showMessageDialog(null, "Please select a valid specialty or doctor.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (inputSelectAppointTypePV.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(null, "Please select an appointment type.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         String date = inputAppointDatePV.getText();
         String time = inputAppointTimePV.getText();
         String reason = inputTextAreaPV.getText();
-        String selected_id = inputSelectRequestPV.getItemAt(inputSelectRequestPV.getSelectedIndex());
         int type = inputSelectAppointTypePV.getSelectedIndex();
         boolean isSpecialty = btnRadioSpecialtyPV.isSelected();
 
         Response res = appointmentController.requestAppointment(userId, date, time, type, reason, selected_id, isSpecialty);
         if (res.getStatus() == Status.CREATED) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment request creation successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Appointment request creation successful", JOptionPane.INFORMATION_MESSAGE);
             inputAppointDatePV.setText(""); inputAppointTimePV.setText(""); inputTextAreaPV.setText("");
             inputSelectAppointTypePV.setSelectedIndex(0);
             inputSelectRequestPV.setSelectedIndex(0);
             btnRefreshPVActionPerformed(null);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCreateRequestMediPVActionPerformed
 
@@ -918,12 +934,12 @@ public class PatientView extends javax.swing.JFrame implements IDataObserver {
 
         Response res = hospitalizationController.requestHospitalization(userId, reason, doctor_fullName, admission_date, room_type, observations);
         if (res.getStatus() == Status.CREATED) {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Hospitalization request creation successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Hospitalization request creation successful", JOptionPane.INFORMATION_MESSAGE);
             inputTextAreaHospiReasPV.setText(""); inputSelectAttendingPV.setSelectedIndex(0);
             inputEstiDatePV.setText(""); inputSelectDesiredRoomPV.setSelectedIndex(0); inputTextAreaObservPV.setText("");
             btnRefreshPVActionPerformed(null);
         } else {
-            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCreateHospiPVActionPerformed
 

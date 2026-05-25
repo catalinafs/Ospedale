@@ -93,7 +93,7 @@ public class AppointmentController implements IAppointmentController {
 
             Appointment appointment = new Appointment(
                     appointmentId, patient, doctor, doctor.getSpecialty(),
-                    dateTime, reason, "consultation".equals(type)
+                    dateTime, reason, type == 2
             );
 
             appointmentStorage.addAppointment(appointment);
@@ -169,8 +169,9 @@ public class AppointmentController implements IAppointmentController {
             if (appointment.getPatient().getId() != patientId) {
                 return new Response("You are not the patient of this appointment.", Status.UNAUTHORIZED);
             }
-            if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
-                return new Response("Cannot cancel a completed appointment.", Status.BAD_REQUEST);
+            if (appointment.getStatus() == AppointmentStatus.COMPLETED
+                    || appointment.getStatus() == AppointmentStatus.CANCELED) {
+                return new Response("Cannot cancel a completed or already canceled appointment.", Status.BAD_REQUEST);
             }
             appointment.setStatus(AppointmentStatus.CANCELED);
             appointmentStorage.notifyObservers();
