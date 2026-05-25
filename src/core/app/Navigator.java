@@ -91,6 +91,7 @@ public final class Navigator {
                 (DoctorController) appContext.getDoctorController(),
                 (AppointmentController) appContext.getAppointmentController(),
                 (HospitalizationController) appContext.getHospitalizationController(),
+                appContext.getPrescriptionController(),
                 this
         );
         currentFrame = doctorView;

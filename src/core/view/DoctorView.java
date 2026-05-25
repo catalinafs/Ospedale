@@ -8,6 +8,7 @@ import core.app.Navigator;
 import core.controllers.AppointmentController;
 import core.controllers.DoctorController;
 import core.controllers.HospitalizationController;
+import core.controllers.IPrescription;
 import core.controllers.PatientController;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
@@ -35,8 +36,9 @@ public class DoctorView extends javax.swing.JFrame {
     private PatientController patientController;
     private AppointmentController appointmentController;
     private HospitalizationController hospitalizationController;
+    private IPrescription prescriptionController;
 
-    public DoctorView(User user, Doctor doc, PatientController patientController, DoctorController doctorController, AppointmentController appointmentController, HospitalizationController hospitalizationController, Navigator navigator) {
+    public DoctorView(User user, Doctor doc, PatientController patientController, DoctorController doctorController, AppointmentController appointmentController, HospitalizationController hospitalizationController, IPrescription prescriptionController, Navigator navigator) {
         initComponents();
         this.user = user;
         this.doctor = doc;
@@ -44,6 +46,7 @@ public class DoctorView extends javax.swing.JFrame {
         this.doctorController = doctorController;
         this.appointmentController = appointmentController;
         this.hospitalizationController = hospitalizationController;
+        this.prescriptionController = prescriptionController;
         this.navigator = navigator;
 
         if (user instanceof Administrator) {
@@ -75,6 +78,12 @@ public class DoctorView extends javax.swing.JFrame {
             inputSelectAppointIDDV.addItem(String.valueOf(appt.get("id")));
             inputSelectAppointDV.addItem(String.valueOf(appt.get("id")));
             inputCompleteAppointDV.addItem(String.valueOf(appt.get("id")));
+        }
+        
+        inputSelectAppointPresMediDV.removeAllItems();
+        inputSelectAppointPresMediDV.addItem("Select one");
+        for (HashMap<String, Object> appt : appointments) {
+            inputSelectAppointPresMediDV.addItem(String.valueOf(appt.get("id")));
         }
     }
 
@@ -1298,8 +1307,47 @@ public class DoctorView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCompletDVActionPerformed
 
     private void btnPrescribePresMediDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrescribePresMediDVActionPerformed
-//        DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
-//        model.setRowCount(0);
+        DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
+        int rowCount = model.getRowCount();
+        if (rowCount == 0) {
+            JOptionPane.showInternalMessageDialog(null, "No medications to prescribe.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        StringBuilder summary = new StringBuilder();
+        int processedCount = 0;
+        for (int row = 0; row < rowCount; row++) {
+            String appointmentId = (String) model.getValueAt(row, 0);
+            if (appointmentId == null || appointmentId.trim().isEmpty()) continue;
+            processedCount++;
+            String medicationName = (String) model.getValueAt(row, 1);
+            String dose = (String) model.getValueAt(row, 2);
+            String administrationRoute = (String) model.getValueAt(row, 3);
+            String treatmentDuration = (String) model.getValueAt(row, 4);
+            String additionalInstructions = (String) model.getValueAt(row, 5);
+            String frequency = (String) model.getValueAt(row, 6);
+            Response res = prescriptionController.prescribeMedication(
+                appointmentId, doctor.getId(), medicationName, dose,
+                administrationRoute, treatmentDuration, additionalInstructions, frequency
+            );
+            if (res.getStatus() != Status.CREATED) {
+                if (summary.length() > 0) summary.append("\n");
+                summary.append("- ").append(medicationName).append(": ").append(res.getMessage());
+            }
+        }
+        model.setRowCount(0);
+        inputMediNamePresMediDV.setText("");
+        inputDosePresMediDV.setText("");
+        inputAdminRoutePresMediDV.setText("");
+        inputTreatDuratPresMediDV.setText("");
+        inputAdditInstrucPresMediDV.setText("");
+        inputFrecuenPresMediDV.setText("");
+        if (processedCount == 0) {
+            JOptionPane.showInternalMessageDialog(null, "No medications to prescribe.", "Oops..", JOptionPane.ERROR_MESSAGE);
+        } else if (summary.length() == 0) {
+            JOptionPane.showInternalMessageDialog(null, "All medications prescribed successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, "Some medications failed:\n" + summary.toString(), "Oops..", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnPrescribePresMediDVActionPerformed
 
     private void btnAddPresMediDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPresMediDVActionPerformed
@@ -1320,6 +1368,19 @@ public class DoctorView extends javax.swing.JFrame {
 //                apo.addPrescription(new Prescription(apo, medicationName, dose, administrationRoute, tratementduration, aditionalIformation, frecuency));
 //            }
 //        }
+        DefaultTableModel model = (DefaultTableModel) tablePresMediDV.getModel();
+        if (inputSelectAppointPresMediDV.getSelectedIndex() == 0) {
+            JOptionPane.showInternalMessageDialog(null, "Please select an appointment.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String appointmentId = inputSelectAppointPresMediDV.getItemAt(inputSelectAppointPresMediDV.getSelectedIndex());
+        String medicationName = inputMediNamePresMediDV.getText();
+        String doseText = inputDosePresMediDV.getText();
+        String administrationRoute = inputAdminRoutePresMediDV.getText();
+        String durationText = inputTreatDuratPresMediDV.getText();
+        String instructions = inputAdditInstrucPresMediDV.getText();
+        String frequencyText = inputFrecuenPresMediDV.getText();
+        model.addRow(new Object[]{appointmentId, medicationName, doseText, administrationRoute, durationText, instructions, frequencyText});
     }//GEN-LAST:event_btnAddPresMediDVActionPerformed
 
     private void btnAcceptResMediAppointDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcceptResMediAppointDVActionPerformed

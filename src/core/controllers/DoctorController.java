@@ -9,64 +9,98 @@ import core.controllers.utils.Status;
 import core.controllers.validators.IDoctorValidator;
 import core.model.Doctor;
 import core.model.IDoctorStorage;
+import core.model.IUserStorage;
 import core.model.Specialty;
+import core.model.UserStorage;
+import core.model.persistence.IUserPersistence;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 /**
  *
  * @author briggoes
  */
 public class DoctorController implements IDoctorController {
-
     private final IDoctorStorage storage;
     private final IDoctorValidator validator;
-
-    public DoctorController(IDoctorStorage storage, IDoctorValidator validator) {
+    private final IUserPersistence persistence;
+    
+    public DoctorController(IDoctorStorage storage, IDoctorValidator validator, IUserPersistence persistence) {
         this.storage = storage;
         this.validator = validator;
+        this.persistence = persistence;
     }
-
+    
     @Override
     public Response register(long id, String username, String firstname, String lastname, String password, String passwordConfirm, Specialty specialty, String licenceNumber, String assignedOffice) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            if (firstname == null || firstname.trim().isEmpty()) {
+                return new Response("Firstname is required.", Status.BAD_REQUEST);
+            }
+            if (lastname == null || lastname.trim().isEmpty()) {
+                return new Response("Lastname is required.", Status.BAD_REQUEST);
+            }
+            Response error = validator.validateId(String.valueOf(id));
+            if (error != null) return error;
+            if (storage.getDoctor(id) != null) {
+                return new Response("Doctor with this ID already exists.", Status.CONFLICT);
+            }
+            error = validator.validateSpecialty(String.valueOf(specialty));
+            if (error != null) return error;
+            error = validator.validateLicence(licenceNumber);
+            if (error != null) return error;
+            error = validator.validateOffice(assignedOffice);
+            if (error != null) return error;
+            error = validator.validateUsername(username);
+            if (error != null) return error;
+            if (storage.getDoctorByUsername(username.trim()) != null) {
+                return new Response("Username already in use.", Status.CONFLICT);
+            }
+            error = validator.validatePassword(password, passwordConfirm);
+            if (error != null) return error;
+            Doctor doctor = new Doctor(id, username, firstname, lastname, password, specialty, licenceNumber, assignedOffice);
+            storage.addDoctor(doctor);
+            persistence.save((UserStorage) storage);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("id", id);
+            data.put("username", username);
+            data.put("firstname", firstname);
+            data.put("lastname", lastname);
+            return new Response("Doctor registered successfully.", Status.CREATED, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
-
+    
     @Override
     public Response update(long id, String username, String firstname, String lastname, String password, String passwordConfirm, String specialty, String licenseNumber, String assignedOffice) {
         try {
             if (storage.getDoctor(id) == null) {
                 return new Response("Doctor not found.", Status.NOT_FOUND);
             }
-
             if (specialty != null && !specialty.trim().isEmpty()) {
                 Response error = validator.validateSpecialty(specialty);
                 if (error != null) {
                     return error;
                 }
             }
-
             if (licenseNumber != null && !licenseNumber.trim().isEmpty()) {
                 Response error = validator.validateLicence(licenseNumber);
                 if (error != null) {
                     return error;
                 }
             }
-
             if (assignedOffice != null && !assignedOffice.trim().isEmpty()) {
                 Response error = validator.validateOffice(assignedOffice);
                 if (error != null) {
                     return error;
                 }
             }
-
             if (username != null && !username.trim().isEmpty()) {
                 Doctor docWithUsername = storage.getDoctorByUsername(username.trim());
                 if (docWithUsername != null && docWithUsername.getId() != id) {
                     return new Response("Username already in use.", Status.CONFLICT);
                 }
             }
-
             boolean passwordProvided = password != null && !password.trim().isEmpty();
             boolean confirmationProvided = passwordConfirm != null && !passwordConfirm.trim().isEmpty();
             if (passwordProvided || confirmationProvided) {
@@ -80,11 +114,9 @@ public class DoctorController implements IDoctorController {
                     return error;
                 }
             }
-
             if (!storage.updateDoctor(id, username, firstname, lastname, password, licenseNumber, assignedOffice)) {
                 return new Response("Doctor not found.", Status.NOT_FOUND);
             }
-
             Doctor updated = storage.getDoctor(id);
             HashMap<String, Object> data = new HashMap<>();
             data.put("id", id);
@@ -96,30 +128,28 @@ public class DoctorController implements IDoctorController {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }
     }
-
+    
     @Override
     public Response getDoctor(long id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public Response getAllDoctors() {
         try {
             var doctors = storage.getAllDoctors();
             HashMap<String, Object> map = new HashMap();
-
             for (Doctor doc : doctors) {
                 map.put(String.valueOf(doc.getId()), doc);
             }
-
             return new Response("Doctors found.", Status.OK, map);
         } catch (Exception e) {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }
     }
-
+    
     @Override
     public Response getDoctorsBySpecialty(Specialty specialty) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -15,7 +15,10 @@ public interface IPrescription {
         String appointmentId,
         long doctorId,
         String medication,
-        String dosage,
-        String instructions
+        String dose,
+        String administrationRoute,
+        String treatmentDuration,
+        String additionalInstructions,
+        String frequency
     );
 }
