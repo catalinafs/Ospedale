@@ -12,6 +12,7 @@ public enum HospitalizationStatus {
 
     REQUESTED,
     ONGOING,
-    CANCELED
+    CANCELED,
+    COMPLETED
 
 }

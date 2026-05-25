@@ -7,8 +7,11 @@ package core.controllers;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.controllers.validators.IHospitalizationValidator;
+import core.model.Appointment;
 import core.model.Doctor;
 import core.model.Hospitalization;
+import core.model.HospitalizationStatus;
+import core.model.IAppointmentStorage;
 import core.model.IDoctorStorage;
 import core.model.IHospitalizationStorage;
 import core.model.IPatientStorage;
@@ -16,9 +19,8 @@ import core.model.Patient;
 import core.model.RoomType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -29,12 +31,17 @@ public class HospitalizationController implements IHospitalizationOps {
     private final IHospitalizationStorage hospitalizationStorage;
     private final IPatientStorage patientStorage;
     private final IDoctorStorage doctorStorage;
+    private final IAppointmentStorage appointmentStorage;
     private final IHospitalizationValidator validator;
 
-    public HospitalizationController(IHospitalizationStorage hospitalizationStorage, IPatientStorage patientStorage, IDoctorStorage doctorStorage, IHospitalizationValidator validator) {
+    public HospitalizationController(IHospitalizationStorage hospitalizationStorage,
+            IPatientStorage patientStorage, IDoctorStorage doctorStorage, 
+            IAppointmentStorage appointmentStorage, 
+            IHospitalizationValidator validator) {
         this.hospitalizationStorage = hospitalizationStorage;
         this.patientStorage = patientStorage;
         this.doctorStorage = doctorStorage;
+        this.appointmentStorage = appointmentStorage;
         this.validator = validator;
     }
 
@@ -81,22 +88,100 @@ public class HospitalizationController implements IHospitalizationOps {
 
     @Override
     public Response approveHospitalization(String hospitalizationId, long doctorId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            Hospitalization hosp = hospitalizationStorage.getHospitalization(hospitalizationId);
+            if (hosp == null) {
+                return new Response("Hospitalization not found.", Status.NOT_FOUND);
+            }
+            Doctor doctor = doctorStorage.getDoctor(doctorId);
+            if (doctor == null) {
+                return new Response("Doctor not found.", Status.NOT_FOUND);
+            }
+            if (hosp.getDoctor().getId() != doctorId) {
+                return new Response("You are not the doctor of this hospitalization.", Status.UNAUTHORIZED);
+            }
+            if (hosp.getStatus() != HospitalizationStatus.REQUESTED) {
+                return new Response("Hospitalization cannot be approved.", Status.BAD_REQUEST);
+            }
+            hosp.setStatus(HospitalizationStatus.ONGOING);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hospitalizationId", hospitalizationId);
+            data.put("status", HospitalizationStatus.ONGOING);
+            return new Response("Hospitalization approved successfully.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
     public Response rejectHospitalization(String hospitalizationId, long doctorId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            Hospitalization hosp = hospitalizationStorage.getHospitalization(hospitalizationId);
+            if (hosp == null) {
+                return new Response("Hospitalization not found.", Status.NOT_FOUND);
+            }
+            Doctor doctor = doctorStorage.getDoctor(doctorId);
+            if (doctor == null) {
+                return new Response("Doctor not found.", Status.NOT_FOUND);
+            }
+            if (hosp.getDoctor().getId() != doctorId) {
+                return new Response("You are not the doctor of this hospitalization.", Status.UNAUTHORIZED);
+            }
+            if (hosp.getStatus() != HospitalizationStatus.REQUESTED) {
+                return new Response("Hospitalization cannot be rejected.", Status.BAD_REQUEST);
+            }
+            hosp.setStatus(HospitalizationStatus.CANCELED);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hospitalizationId", hospitalizationId);
+            data.put("status", HospitalizationStatus.CANCELED);
+            return new Response("Hospitalization rejected successfully.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
     public Response completeFromAppointment(String appointmentId, long doctorId, String hospitalizationId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            Appointment appointment = appointmentStorage.getAppointment(appointmentId);
+            if (appointment == null) {
+                return new Response("Appointment not found.", Status.NOT_FOUND);
+            }
+            if (appointment.getDoctor().getId() != doctorId) {
+                return new Response("You are not the doctor of this appointment.", Status.UNAUTHORIZED);
+            }
+            Hospitalization hosp = hospitalizationStorage.getHospitalization(hospitalizationId);
+            if (hosp == null) {
+                return new Response("Hospitalization not found.", Status.NOT_FOUND);
+            }
+            if (hosp.getStatus() != HospitalizationStatus.ONGOING) {
+                return new Response("Hospitalization must be ONGOING to complete.", Status.BAD_REQUEST);
+            }
+            hosp.setStatus(HospitalizationStatus.COMPLETED);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hospitalizationId", hospitalizationId);
+            data.put("status", HospitalizationStatus.COMPLETED);
+            return new Response("Hospitalization completed successfully.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
     public Response getPatientHospitalizations(long patientId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            ArrayList<Hospitalization> patientHosp = new ArrayList<>();
+            for (Hospitalization h : hospitalizationStorage.getAllHospitalizations()) {
+                if (h.getPatient().getId() == patientId) {
+                    patientHosp.add(h);
+                }
+            }
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hospitalizations", patientHosp);
+            return new Response("Hospitalizations found.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
