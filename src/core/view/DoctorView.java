@@ -1218,6 +1218,20 @@ public class DoctorView extends javax.swing.JFrame {
 //                }
 //            }
 //        }
+        if (!btnRadioRequestDV.isSelected()) return;
+    
+        String hospId = inputSelectRequestDV.getItemAt(inputSelectRequestDV.getSelectedIndex());
+        if (hospId == null || hospId.equals("Select one")) {
+            JOptionPane.showInternalMessageDialog(null, "Please select a hospitalization.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Response res = hospitalizationController.rejectHospitalization(hospId, doctor.getId());
+        if (res.getStatus() == Status.OK) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnCancelHospiDVActionPerformed
 
     private void btnGenerateHospiDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateHospiDVActionPerformed
@@ -1236,6 +1250,29 @@ public class DoctorView extends javax.swing.JFrame {
 //                }
 //            }
 //        }
+        if (!btnRadioPatientIDDV.isSelected()) return;
+    
+        String patientIdStr = inputSelectPatientIDDV.getItemAt(inputSelectPatientIDDV.getSelectedIndex());
+        if (patientIdStr == null || patientIdStr.equals("Select one")) {
+            JOptionPane.showInternalMessageDialog(null, "Please select a patient.", "Oops..", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        long patientId = Long.parseLong(patientIdStr);
+        String reason = inputTextAreaReasHospiDV.getText();
+        String date = inputDateEntryDV.getText();
+        String observations = inputHospiObservDV.getText();
+
+        Response res = hospitalizationController.requestHospitalization(
+            patientId, reason, doctor.getFirstname() + " " + doctor.getLastname(), date, "IMC", observations);
+
+        if (res.getStatus() == Status.CREATED) {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
+            inputTextAreaReasHospiDV.setText("");
+            inputDateEntryDV.setText("");
+            inputHospiObservDV.setText("");
+        } else {
+            JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnGenerateHospiDVActionPerformed
 
     private void btnSearchHistoryPatientDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchHistoryPatientDVActionPerformed
