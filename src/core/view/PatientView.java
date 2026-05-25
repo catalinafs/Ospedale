@@ -1,48 +1,55 @@
 package core.view;
 
-import core.app.Navigator;
-import core.controllers.AppointmentController;
-import core.controllers.DoctorController;
-import core.controllers.HospitalizationController;
-import core.controllers.PatientController;
+import core.app.INavigator;
+import core.controllers.IAppointmentController;
+import core.controllers.IAuthController;
+import core.controllers.IDoctorController;
+import core.controllers.IHospitalizationController;
+import core.controllers.IPatientController;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
-import core.model.Administrator;
-import core.model.Appointment;
 import core.model.Doctor;
-import core.model.Patient;
 import core.model.RoomType;
 import core.model.Specialty;
-import core.model.User;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class PatientView extends javax.swing.JFrame {
 
     private int x, y;
-    private User user;
-    private Patient patient;
-    private Navigator navigator;
-    private PatientController patientController;
-    private DoctorController doctorController;
-    private AppointmentController appointmentController;
-    private HospitalizationController hospitalizationController;
+    private long userId;
+    private INavigator navigator;
+    private IAuthController authController;
+    private IPatientController patientController;
+    private IDoctorController doctorController;
+    private IAppointmentController appointmentController;
+    private IHospitalizationController hospitalizationController;
 
-    public PatientView(User user, Patient patient, PatientController patientController, DoctorController doctorController, AppointmentController appointmentController, HospitalizationController hospitalizationController, Navigator navigator) {
+    public PatientView(long userId,
+            IAuthController authController,
+            IPatientController patientController,
+            IDoctorController doctorController,
+            IAppointmentController appointmentController,
+            IHospitalizationController hospitalizationController,
+            INavigator navigator) {
         initComponents();
-        this.user = user;
-        this.patient = patient;
+        this.userId = userId;
+        this.authController = authController;
         this.patientController = patientController;
         this.doctorController = doctorController;
         this.appointmentController = appointmentController;
         this.hospitalizationController = hospitalizationController;
         this.navigator = navigator;
 
-        if (user instanceof Administrator) {
-            btnBackPV.setVisible(true);
+        Response res = authController.userIsOfType("ADMIN", userId);
+        if (res.getStatus() == 200) {
+            boolean isAdmin = (boolean) res.getData().get("matches");
+            btnBackPV.setVisible(isAdmin);
         } else {
-            btnBackPV.setVisible(false);
+            navigator.showMain();
         }
 
         this.setBackground(new Color(0, 0, 0, 0));
@@ -790,7 +797,7 @@ public class PatientView extends javax.swing.JFrame {
 
     private void btnCancelAppointPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelAppointPVActionPerformed
         String idAppointment = inputSelectIDappointPV.getItemAt(inputSelectIDappointPV.getSelectedIndex());
-        Response res = appointmentController.cancelAppointment(idAppointment, patient.getId());
+        Response res = appointmentController.cancelAppointment(idAppointment, userId);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment cancellation succesful", JOptionPane.INFORMATION_MESSAGE);
             btnRefreshPVActionPerformed(null);
@@ -810,7 +817,7 @@ public class PatientView extends javax.swing.JFrame {
         String username = inputUserPV.getText();
         String password = inputPassPV.getText();
         String comPassword = inputPassConfirPV.getText();
-        Response res = patientController.update(user.getId(), username, firstname, lastname, password, comPassword, email, birth, gender, phone, address);
+        Response res = patientController.update(userId, username, firstname, lastname, password, comPassword, email, birth, gender, phone, address);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -823,7 +830,7 @@ public class PatientView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLogoutPVActionPerformed
 
     private void btnBackPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackPVActionPerformed
-        navigator.showAdmin(user);
+//        navigator.showAdmin(user);
     }//GEN-LAST:event_btnBackPVActionPerformed
 
     private void btnRadioSpecialtyPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRadioSpecialtyPVActionPerformed
@@ -855,7 +862,6 @@ public class PatientView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRadioDoctorPVActionPerformed
 
     private void btnCreateRequestMediPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateRequestMediPVActionPerformed
-        long patient_id = patient.getId();
         String date = inputAppointDatePV.getText();
         String time = inputAppointTimePV.getText();
         String reason = inputTextAreaPV.getText();
@@ -863,7 +869,7 @@ public class PatientView extends javax.swing.JFrame {
         int type = inputSelectAppointTypePV.getSelectedIndex();
         boolean isSpecialty = btnRadioSpecialtyPV.isSelected();
 
-        Response res = appointmentController.requestAppointment(patient_id, date, time, type, reason, selected_id, isSpecialty);
+        Response res = appointmentController.requestAppointment(userId, date, time, type, reason, selected_id, isSpecialty);
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment request creation successful", JOptionPane.INFORMATION_MESSAGE);
             btnRefreshPVActionPerformed(null);
@@ -876,24 +882,34 @@ public class PatientView extends javax.swing.JFrame {
     private void btnRefreshPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshPVActionPerformed
         DefaultTableModel model = (DefaultTableModel) tableAppointPV.getModel();
         model.setRowCount(0);
-        inputSelectIDappointPV.removeAllItems();
 
+        Response res = appointmentController.getPatientAppointments(userId);
+        ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res.getData().get("appointments");
+
+        inputSelectIDappointPV.removeAllItems();
         inputSelectIDappointPV.addItem("Select one");
-        for (Appointment a : patient.getAppointments()) {
-            inputSelectIDappointPV.addItem(a.getId());
-            model.addRow(new Object[]{a.getId(), a.getDatetime().toString(), a.getDoctor().getFirstname() + " " + a.getDoctor().getLastname(), a.getSpecialty().name(), a.isType() ? "In-person" : "Remote", a.getStatus().name()});
+        for (HashMap<String, Object> a : appointments) {
+            inputSelectIDappointPV.addItem(String.valueOf(a.get("id")));
+            model.addRow(new Object[]{
+                a.get("id"),
+                a.get("date"),
+                a.get("doctor"),
+                a.get("specialty"),
+                a.get("type"),
+                a.get("status")
+            });
+
         }
     }//GEN-LAST:event_btnRefreshPVActionPerformed
 
     private void btnCreateHospiPVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateHospiPVActionPerformed
-        long patient_id = patient.getId();
         String reason = inputTextAreaHospiReasPV.getText();
         String doctor_id = inputSelectAttendingPV.getItemAt(inputSelectAttendingPV.getSelectedIndex());
         String admission_date = inputEstiDatePV.getText();
         String room_type = inputSelectDesiredRoomPV.getItemAt(inputSelectDesiredRoomPV.getSelectedIndex());
         String observations = inputTextAreaObservPV.getText();
 
-        Response res = hospitalizationController.requestHospitalization(patient_id, reason, doctor_id, admission_date, room_type, observations);
+        Response res = hospitalizationController.requestHospitalization(userId, reason, doctor_id, admission_date, room_type, observations);
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Hospitalization request creation successful", JOptionPane.INFORMATION_MESSAGE);
             btnRefreshPVActionPerformed(null);

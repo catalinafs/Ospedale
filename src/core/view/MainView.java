@@ -1,22 +1,23 @@
 package core.view;
 
-import core.controllers.AuthController;
-import core.controllers.PatientController;
+import core.app.INavigator;
 import core.controllers.utils.Response;
 import java.awt.Color;
 import javax.swing.JOptionPane;
-import core.app.Navigator;
+import core.controllers.IAuthController;
+import core.controllers.IPatientController;
 import core.controllers.utils.Status;
+import java.util.HashMap;
 
 public class MainView extends javax.swing.JFrame {
 
     private int x, y;
 
-    private PatientController patientController;
-    private AuthController authController;
-    private Navigator navigator;
+    private IPatientController patientController;
+    private IAuthController authController;
+    private INavigator navigator;
 
-    public MainView(PatientController patientController, AuthController authController, Navigator navigator) {
+    public MainView(IPatientController patientController, IAuthController authController, INavigator navigator) {
         initComponents();
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
@@ -127,6 +128,11 @@ public class MainView extends javax.swing.JFrame {
 
         btnEnterMV.setFont(new java.awt.Font("Yu Gothic UI", 0, 18)); // NOI18N
         btnEnterMV.setText("ENTER");
+        btnEnterMV.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEnterMVMouseClicked(evt);
+            }
+        });
         btnEnterMV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEnterMVActionPerformed(evt);
@@ -407,7 +413,10 @@ public class MainView extends javax.swing.JFrame {
         String user = inputUserMV.getText();
         Response res = authController.login(user, psswd);
         if (res.getStatus() == Status.OK) {
-            navigator.openAfterLogin(res);
+            HashMap<String, Object> data = res.getData();
+            Object typeObj = data.get("type");
+            Object idObj = data.get("id");
+            navigator.openAfterLogin(typeObj, idObj);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }
@@ -437,6 +446,10 @@ public class MainView extends javax.swing.JFrame {
     private void inputPassConfirRegisMVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputPassConfirRegisMVActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_inputPassConfirRegisMVActionPerformed
+
+    private void btnEnterMVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEnterMVMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEnterMVMouseClicked
 
     /**
      * @param args the command line arguments

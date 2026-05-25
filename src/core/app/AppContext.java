@@ -4,9 +4,10 @@ import core.controllers.AppointmentController;
 import core.controllers.AuthController;
 import core.controllers.DoctorController;
 import core.controllers.HospitalizationController;
+import core.controllers.IAppointmentController;
 import core.controllers.IAuthController;
 import core.controllers.IDoctorController;
-import core.controllers.IHospitalizationOps;
+import core.controllers.IHospitalizationController;
 import core.controllers.IPatientController;
 import core.controllers.IPrescription;
 import core.controllers.PatientController;
@@ -49,9 +50,9 @@ public final class AppContext {
 
     private final IAuthController authController;
     private final IPatientController patientController;
-    private final AppointmentController appointmentController;
+    private final IAppointmentController appointmentController;
     private final IDoctorController doctorController;
-    private final IHospitalizationOps hospitalizationController;
+    private final IHospitalizationController hospitalizationController;
     private final IPrescription prescriptionController;
 
     public AppContext(
@@ -63,9 +64,9 @@ public final class AppContext {
             IUserPersistence persistence,
             IAuthController authController,
             IPatientController patientController,
-            AppointmentController appointmentController,
+            IAppointmentController appointmentController,
             IDoctorController doctorController,
-            IHospitalizationOps hospitalizationController,
+            IHospitalizationController hospitalizationController,
             IPrescription prescriptionController) {
         this.userStorage = userStorage;
         this.patientStorage = patientStorage;
@@ -105,9 +106,9 @@ public final class AppContext {
         
         IAuthController authController = new AuthController(userStorage);
         IPatientController patientController = new PatientController(patientStorage, new PatientValidator(), persistence);
-        AppointmentController appointmentController = new AppointmentController(appointmentStorage, patientStorage, doctorStorage, new AppointmentValidator());
+        IAppointmentController appointmentController = new AppointmentController(appointmentStorage, patientStorage, doctorStorage, new AppointmentValidator());
         IDoctorController doctorController = new DoctorController(doctorStorage, new DoctorValidator(), persistence);
-        IHospitalizationOps hospitalizationController = new HospitalizationController(hospitalizationStorage, patientStorage, doctorStorage, appointmentStorage, new HospitalizationValidator());
+        IHospitalizationController hospitalizationController = new HospitalizationController(hospitalizationStorage, patientStorage, doctorStorage, new HospitalizationValidator());
         IPrescription prescriptionController = new PrescriptionController(appointmentStorage, doctorStorage, new PrescriptionValidator());
         
         return new AppContext(
@@ -122,10 +123,11 @@ public final class AppContext {
                 appointmentController,
                 doctorController,
                 hospitalizationController,
-                prescriptionController);
+                prescriptionController
+        );
     }
 
-    public IHospitalizationOps getHospitalizationController() {
+    public IHospitalizationController getHospitalizationController() {
         return hospitalizationController;
     }
 
@@ -161,7 +163,7 @@ public final class AppContext {
         return patientController;
     }
 
-    public AppointmentController getAppointmentController() {
+    public IAppointmentController getAppointmentController() {
         return appointmentController;
     }
 

@@ -6,20 +6,20 @@ import core.controllers.DoctorController;
 import core.controllers.HospitalizationController;
 import core.controllers.PatientController;
 import core.controllers.utils.Response;
+import core.model.Administrator;
 import core.model.Doctor;
 import core.model.Patient;
 import core.model.User;
+import core.view.AdminView;
 import core.view.DoctorView;
 import core.view.MainView;
 import core.view.PatientView;
-import java.util.Map;
 import javax.swing.JFrame;
 
-public final class Navigator {
+public final class Navigator implements INavigator {
 
     private final AppContext appContext;
     private JFrame currentFrame;
-    private User currentUser;
 
     public Navigator(AppContext appContext) {
         this.appContext = appContext;
@@ -29,27 +29,18 @@ public final class Navigator {
         return appContext;
     }
 
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
     public void showMain() {
-        currentUser = null;
         hideCurrent();
         MainView mainView = new MainView(
-                (PatientController) appContext.getPatientController(),
-                (AuthController) appContext.getAuthController(),
+                appContext.getPatientController(),
+                appContext.getAuthController(),
                 this
         );
         currentFrame = mainView;
         mainView.setVisible(true);
     }
 
-    public void openAfterLogin(Response loginResponse) {
-        Map<String, Object> data = loginResponse.getData();
-
-        Object typeObj = data.get("type");
-        Object idObj = data.get("id");
+    public void openAfterLogin(Object typeObj, Object idObj) {
         if (!(typeObj instanceof String type) || !(idObj instanceof Number idNumber)) {
             return;
         }
@@ -59,7 +50,6 @@ public final class Navigator {
             return;
         }
 
-        currentUser = user;
         hideCurrent();
 
         switch (type) {
@@ -75,7 +65,19 @@ public final class Navigator {
     }
 
     public void showAdmin(User user) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (!(user instanceof Administrator admin)) {
+            throw new IllegalArgumentException("User is not an administrator.");
+        }
+        
+        hideCurrent();
+        AdminView adminView = new AdminView(
+                user.getId(),
+                appContext.getPatientController(),
+                appContext.getDoctorController(),
+                this
+        );
+        currentFrame = adminView;
+        adminView.setVisible(true);
     }
 
     public void showDoctor(User user) {
@@ -85,12 +87,12 @@ public final class Navigator {
 
         hideCurrent();
         DoctorView doctorView = new DoctorView(
-                user,
-                doctor,
-                (PatientController) appContext.getPatientController(),
-                (DoctorController) appContext.getDoctorController(),
-                (AppointmentController) appContext.getAppointmentController(),
-                (HospitalizationController) appContext.getHospitalizationController(),
+                user.getId(),
+                appContext.getAuthController(),
+                appContext.getPatientController(),
+                appContext.getDoctorController(),
+                appContext.getAppointmentController(),
+                appContext.getHospitalizationController(),
                 appContext.getPrescriptionController(),
                 this
         );
@@ -105,12 +107,12 @@ public final class Navigator {
 
         hideCurrent();
         PatientView patientView = new PatientView(
-                user,
-                patient,
-                (PatientController) appContext.getPatientController(),
-                (DoctorController) appContext.getDoctorController(),
-                (AppointmentController) appContext.getAppointmentController(),
-                (HospitalizationController) appContext.getHospitalizationController(),
+                user.getId(),
+                appContext.getAuthController(),
+                appContext.getPatientController(),
+                appContext.getDoctorController(),
+                appContext.getAppointmentController(),
+                appContext.getHospitalizationController(),
                 this
         );
         currentFrame = patientView;

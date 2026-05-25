@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *
  * @author briggoes
  */
-public class AppointmentController implements IAppointmentOps, IAppointmentQuery {
+public class AppointmentController implements IAppointmentController {
 
     private final IAppointmentStorage appointmentStorage;
     private final IPatientStorage patientStorage;
@@ -211,6 +211,31 @@ public class AppointmentController implements IAppointmentOps, IAppointmentQuery
     @Override
     public Response getPatientAppointments(String fullname) {
         Patient patient = patientStorage.getPatientByFullName(fullname);
+        if (patient == null) {
+            return new Response("Patient not found.", Status.NOT_FOUND);
+        }
+        ArrayList<Appointment> appointments = patient.getAppointments();
+        appointments.sort((a, b) -> b.getDatetime().compareTo(a.getDatetime()));
+        ArrayList<HashMap<String, Object>> appointmentList = new ArrayList<>();
+        for (Appointment appt : appointments) {
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("id", appt.getId());
+            data.put("date", appt.getDatetime().toLocalDate().toString());
+            data.put("time", appt.getDatetime().toLocalTime().toString().substring(0, 5));
+            data.put("doctor", appt.getDoctor().getFirstname() + " " + appt.getDoctor().getLastname());
+            data.put("specialty", appt.getSpecialty().name().toString());
+            data.put("type", appt.isType() ? "In-Person" : "Remote");
+            data.put("status", appt.getStatus().toString());
+            appointmentList.add(data);
+        }
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("appointments", appointmentList);
+        return new Response("Appointments retrieved.", Status.OK, result);
+    }
+
+    @Override
+    public Response getPatientAppointments(long patientId) {
+        Patient patient = patientStorage.getPatient(patientId);
         if (patient == null) {
             return new Response("Patient not found.", Status.NOT_FOUND);
         }

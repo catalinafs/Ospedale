@@ -14,4 +14,5 @@ public interface IAppointmentQuery {
     public Response getPatientAppointments(String fullname);
     public Response getDoctorAppointments(long doctorId);
     public Response getDoctorPending(long doctorId);
+    public Response getPatientAppointments(long patientId);
 }

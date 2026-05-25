@@ -26,7 +26,7 @@ import java.util.HashMap;
  *
  * @author briggoes
  */
-public class HospitalizationController implements IHospitalizationOps {
+public class HospitalizationController implements IHospitalizationController {
 
     private final IHospitalizationStorage hospitalizationStorage;
     private final IPatientStorage patientStorage;

@@ -160,11 +160,21 @@ public class DoctorController implements IDoctorController {
     public Response getAllDoctors() {
         try {
             var doctors = storage.getAllDoctors();
-            HashMap<String, Object> map = new HashMap();
+            ArrayList<HashMap<String, Object>> doctorList = new ArrayList<>();
+
             for (Doctor doc : doctors) {
-                map.put(String.valueOf(doc.getId()), doc);
+                HashMap<String, Object> data = new HashMap<>();
+
+                data.put("id", doc.getId());
+                data.put("fullname", doc.getFirstname() + " " + doc.getLastname());
+
+                doctorList.add(data);
             }
-            return new Response("Doctors found.", Status.OK, map);
+
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("doctors", doctorList);
+
+            return new Response("Doctors found.", Status.OK, result);
         } catch (Exception e) {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }

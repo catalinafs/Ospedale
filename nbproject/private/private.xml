@@ -2,18 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/controllers/IPatientController.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/main/Main.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/controllers/AuthController.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/controllers/validators/PatientValidator.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/controllers/validators/IUserValidator.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/controllers/validators/IPatientValidator.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/view/DoctorView.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/view/AdminView.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/controllers/PatientController.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/view/MainView.java</file>
-            <file>file:/home/briggoes/Desktop/Ospedale/src/core/controllers/utils/Status.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
