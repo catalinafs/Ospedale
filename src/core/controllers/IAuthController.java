@@ -12,5 +12,6 @@ import core.controllers.utils.Response;
  */
 public interface IAuthController {
     public Response login(String username, String password);
+    public Response userIsOfType(String type, long userId);
     public Response logout();
 }

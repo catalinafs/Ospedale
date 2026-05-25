@@ -1,22 +1,23 @@
 package core.view;
 
-import core.controllers.AuthController;
-import core.controllers.PatientController;
+import core.app.INavigator;
 import core.controllers.utils.Response;
 import java.awt.Color;
 import javax.swing.JOptionPane;
-import core.app.Navigator;
+import core.controllers.IAuthController;
+import core.controllers.IPatientController;
 import core.controllers.utils.Status;
+import java.util.HashMap;
 
 public class MainView extends javax.swing.JFrame {
 
     private int x, y;
 
-    private PatientController patientController;
-    private AuthController authController;
-    private Navigator navigator;
+    private IPatientController patientController;
+    private IAuthController authController;
+    private INavigator navigator;
 
-    public MainView(PatientController patientController, AuthController authController, Navigator navigator) {
+    public MainView(IPatientController patientController, IAuthController authController, INavigator navigator) {
         initComponents();
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
@@ -407,7 +408,10 @@ public class MainView extends javax.swing.JFrame {
         String user = inputUserMV.getText();
         Response res = authController.login(user, psswd);
         if (res.getStatus() == Status.OK) {
-            navigator.openAfterLogin(res);
+            HashMap<String, Object> data = res.getData();
+            Object typeObj = data.get("type");
+            Object idObj = data.get("id");
+            navigator.openAfterLogin(typeObj, idObj);
         } else {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Oops..", JOptionPane.ERROR_MESSAGE);
         }

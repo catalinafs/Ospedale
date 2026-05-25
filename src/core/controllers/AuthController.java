@@ -17,13 +17,14 @@ import java.util.HashMap;
  *
  * @author briggoes
  */
-public class AuthController implements IAuthController{
+public class AuthController implements IAuthController {
+
     private final IUserStorage storage;
-    
+
     public AuthController(IUserStorage storage) {
         this.storage = storage;
     }
-    
+
     @Override
     public Response login(String username, String password) {
         if (username == null || username.trim().isEmpty()) {
@@ -53,21 +54,48 @@ public class AuthController implements IAuthController{
             data.put("type", "admin");
         } else if (user instanceof Doctor) {
             data.put("type", "doctor");
-            data.put("specialty", ((Doctor)user).getSpecialty().toString());
+            data.put("specialty", ((Doctor) user).getSpecialty().toString());
         } else if (user instanceof Patient) {
             data.put("type", "patient");
-            data.put("gender", ((Patient)user).isGender());
-            data.put("email", ((Patient)user).getEmail());
-            data.put("birthdate", ((Patient)user).getBirthdate().toString());
-            data.put("phone", ((Patient)user).getPhone());
-            data.put("address", ((Patient)user).getAddress());
+            data.put("gender", ((Patient) user).isGender());
+            data.put("email", ((Patient) user).getEmail());
+            data.put("birthdate", ((Patient) user).getBirthdate().toString());
+            data.put("phone", ((Patient) user).getPhone());
+            data.put("address", ((Patient) user).getAddress());
         }
-    
+
         return new Response("Login successful.", Status.OK, data);
     }
-    
+
     @Override
     public Response logout() {
         return new Response("Logout successful.", Status.OK);
+    }
+
+    @Override
+    public Response userIsOfType(String type, long userId) {
+        try {
+            User user = storage.get(userId);
+            if (user == null) {
+                return new Response("User with given id does not exist.", Status.UNAUTHORIZED);
+            }
+
+            boolean matches = switch (type) {
+                case "ADMIN" ->
+                    user instanceof Administrator;
+                case "DOCTOR" ->
+                    user instanceof Doctor;
+                case "PATIENT" ->
+                    user instanceof Patient;
+                default ->
+                    false;
+            };
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("matches", matches);
+            return new Response("Type checked.", Status.OK, data);
+        } catch (Exception e) {
+            return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
+        }
     }
 }

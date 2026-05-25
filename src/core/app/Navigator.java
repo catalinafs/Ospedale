@@ -72,8 +72,8 @@ public final class Navigator implements INavigator {
 
         hideCurrent();
         DoctorView doctorView = new DoctorView(
-                user,
-                doctor,
+                user.getId(),
+                appContext.getAuthController(),
                 appContext.getPatientController(),
                 appContext.getDoctorController(),
                 appContext.getAppointmentController(),

@@ -4,16 +4,14 @@
  */
 package core.view;
 
-import core.app.Navigator;
-import core.controllers.AppointmentController;
-import core.controllers.DoctorController;
-import core.controllers.HospitalizationController;
-import core.controllers.PatientController;
+import core.app.INavigator;
+import core.controllers.IAppointmentController;
+import core.controllers.IAuthController;
+import core.controllers.IDoctorController;
+import core.controllers.IHospitalizationController;
+import core.controllers.IPatientController;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
-import core.model.Administrator;
-import core.model.Doctor;
-import core.model.User;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,35 +26,44 @@ import javax.swing.table.DefaultTableModel;
 public class DoctorView extends javax.swing.JFrame {
 
     private int x, y;
-    private User user;
-    private Doctor doctor;
-    private Navigator navigator;
-    private DoctorController doctorController;
-    private PatientController patientController;
-    private AppointmentController appointmentController;
-    private HospitalizationController hospitalizationController;
+    private long userId;
+    private INavigator navigator;
+    private IAuthController authController;
+    private IDoctorController doctorController;
+    private IPatientController patientController;
+    private IAppointmentController appointmentController;
+    private IHospitalizationController hospitalizationController;
 
-    public DoctorView(User user, Doctor doc, PatientController patientController, DoctorController doctorController, AppointmentController appointmentController, HospitalizationController hospitalizationController, Navigator navigator) {
+    public DoctorView(long userId,
+            IAuthController authController,
+            IPatientController patientController,
+            IDoctorController doctorController,
+            IAppointmentController appointmentController,
+            IHospitalizationController hospitalizationController,
+            INavigator navigator) {
         initComponents();
-        this.user = user;
-        this.doctor = doc;
+        this.userId = userId;
+        this.authController = authController;
         this.patientController = patientController;
         this.doctorController = doctorController;
         this.appointmentController = appointmentController;
         this.hospitalizationController = hospitalizationController;
         this.navigator = navigator;
 
-        if (user instanceof Administrator) {
-            btnBackDV.setVisible(true);
+        Response res = authController.userIsOfType("ADMIN", userId);
+        if (res.getStatus() == 200) {
+            boolean isAdmin = (boolean) res.getData().get("matches");
+            btnBackDV.setVisible(isAdmin);
         } else {
-            btnBackDV.setVisible(false);
+            navigator.showMain();
         }
+
         this.setBackground(new Color(0, 0, 0, 0));
         this.setLocationRelativeTo(null);
 
         btnRadioTotalAppointDVActionPerformed(null);
 
-        Response res = patientController.getAllPatients();
+        res = patientController.getAllPatients();
         ArrayList<HashMap<String, Object>> patients = (ArrayList<HashMap<String, Object>>) res.getData().get("patients");
         inputSelectPatientDV.removeAllItems();
         inputSelectPatientDV.addItem("Select one");
@@ -65,7 +72,7 @@ public class DoctorView extends javax.swing.JFrame {
             inputSelectPatientDV.addItem(fullname);
         }
 
-        Response res2 = appointmentController.getDoctorAppointments(user.getId());
+        Response res2 = appointmentController.getDoctorAppointments(userId);
         ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res2.getData().get("appointments");
 
         inputSelectAppointIDDV.removeAllItems();
@@ -1160,7 +1167,7 @@ public class DoctorView extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tableAppointmentsDV.getModel();
         model.setRowCount(0);
 
-        Response res = appointmentController.getDoctorPending(user.getId());
+        Response res = appointmentController.getDoctorPending(userId);
         ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res.getData().get("appointments");
 
         for (HashMap<String, Object> appt : appointments) {
@@ -1185,7 +1192,7 @@ public class DoctorView extends javax.swing.JFrame {
         String username = inputUserDV.getText();
         String password = inputPassDV.getText();
         String comPassword = inputPassConfirDV.getText();
-        Response res = doctorController.update(user.getId(), username, firstname, lastname, password, comPassword, specialty, licenseNumber, assignedOffice);
+        Response res = doctorController.update(userId, username, firstname, lastname, password, comPassword, specialty, licenseNumber, assignedOffice);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Update successful", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -1198,7 +1205,7 @@ public class DoctorView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLogoutDVActionPerformed
 
     private void btnBackDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackDVActionPerformed
-        navigator.showAdmin(user);
+//        navigator.showAdmin(user);
     }//GEN-LAST:event_btnBackDVActionPerformed
 
     private void btnCancelHospiDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelHospiDVActionPerformed
@@ -1257,7 +1264,7 @@ public class DoctorView extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) tableAppointmentsDV.getModel();
         model.setRowCount(0);
 
-        Response res = appointmentController.getDoctorAppointments(user.getId());
+        Response res = appointmentController.getDoctorAppointments(userId);
         ArrayList<HashMap<String, Object>> appointments = (ArrayList<HashMap<String, Object>>) res.getData().get("appointments");
 
         for (HashMap<String, Object> appt : appointments) {
@@ -1275,7 +1282,7 @@ public class DoctorView extends javax.swing.JFrame {
 
     private void btnAppointIDDVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAppointIDDVActionPerformed
         String idAppointment = inputSelectAppointIDDV.getItemAt(inputSelectAppointIDDV.getSelectedIndex());
-        Response res = appointmentController.acceptAppointment(idAppointment, user.getId());
+        Response res = appointmentController.acceptAppointment(idAppointment, userId);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment acception successful", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -1289,7 +1296,7 @@ public class DoctorView extends javax.swing.JFrame {
         String observations = inputTextAreaObservDV.getText();
         String recommendedTrea = inputTextAreaRecoTreatDV.getText();
         String followUp = inputTextAreaFollowIndicDV.getText();
-        Response res = appointmentController.completeAppointment(idAppointment, user.getId(), diagnosis, followUp, recommendedTrea, observations);
+        Response res = appointmentController.completeAppointment(idAppointment, userId, diagnosis, followUp, recommendedTrea, observations);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment completion successful", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -1326,7 +1333,7 @@ public class DoctorView extends javax.swing.JFrame {
         String idAppointment = inputSelectAppointIDDV.getItemAt(inputSelectAppointIDDV.getSelectedIndex());
         String reasonChangeTime = inputReasonAppointDV.getText();
         String newTime = inputNewTimeAppointDV.getText();
-        Response res = appointmentController.rescheduleAppointment(idAppointment, user.getId(), newTime, reasonChangeTime);
+        Response res = appointmentController.rescheduleAppointment(idAppointment, userId, newTime, reasonChangeTime);
         if (res.getStatus() == Status.OK) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Appointment reschedule successful", JOptionPane.INFORMATION_MESSAGE);
         } else {
