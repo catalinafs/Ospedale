@@ -1,14 +1,11 @@
 package core.view;
 
-import core.app.Navigator;
+import core.app.INavigator;
 import core.controllers.IDoctorController;
 import core.controllers.IPatientController;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
-import core.model.Doctor;
-import core.model.Patient;
 import core.model.Specialty;
-import core.model.User;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
@@ -20,11 +17,11 @@ public class AdminView extends javax.swing.JFrame {
     private long userId;
     private IPatientController patientController;
     private IDoctorController doctorController;
-    private Navigator navigator;
+    private INavigator navigator;
     private java.util.HashMap<String, Long> doctorNameToId = new java.util.HashMap<>();
     private java.util.HashMap<String, Long> patientNameToId = new java.util.HashMap<>();
 
-    public AdminView(long userId, IPatientController patientController, IDoctorController doctorController, Navigator navigator) {
+    public AdminView(long userId, IPatientController patientController, IDoctorController doctorController, INavigator navigator) {
         initComponents();
         this.userId = userId;
         this.patientController = patientController;
@@ -444,7 +441,6 @@ public class AdminView extends javax.swing.JFrame {
         String comPassword = inputPassConfirmAV.getText();
         
         if (spec.equals("Select one")) {
-            JOptionPane.showMessageDialog(null, "Please select a specialty.", "Oops..", JOptionPane.ERROR_MESSAGE);
             return;
         }
         Specialty specialty = Specialty.valueOf(spec.replaceAll(" &", "").replaceAll(" ", "_"));

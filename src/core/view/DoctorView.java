@@ -1289,11 +1289,7 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
             doctorName = docRes.getData().get("firstname") + " " + docRes.getData().get("lastname");
         }
         Response res = hospitalizationController.requestHospitalization(
-<<<<<<< HEAD
-                patientId, reason, userId, date, "IMC", observations);
-=======
-            patientId, reason, doctorName, date, "IMC", observations);
->>>>>>> daniel
+                patientId, reason, doctorName, date, "IMC", observations);
 
         if (res.getStatus() == Status.CREATED) {
             JOptionPane.showInternalMessageDialog(null, res.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -1400,13 +1396,8 @@ public class DoctorView extends javax.swing.JFrame implements IDataObserver {
             String additionalInstructions = (String) model.getValueAt(row, 5);
             String frequency = (String) model.getValueAt(row, 6);
             Response res = prescriptionController.prescribeMedication(
-<<<<<<< HEAD
                     appointmentId, userId, medicationName, dose,
                     administrationRoute, treatmentDuration, additionalInstructions, frequency
-=======
-                appointmentId, userId, medicationName, dose,
-                administrationRoute, treatmentDuration, additionalInstructions, frequency
->>>>>>> daniel
             );
             if (res.getStatus() != Status.CREATED) {
                 if (summary.length() > 0) {

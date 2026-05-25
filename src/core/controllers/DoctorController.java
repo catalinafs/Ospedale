@@ -183,15 +183,19 @@ public class DoctorController implements IDoctorController {
     @Override
     public Response getDoctorsBySpecialty(Specialty specialty) {
         try {
-            ArrayList<Doctor> filtered = new ArrayList<>();
+            ArrayList<HashMap<String, Object>> doctorList = new ArrayList<>();
             for (Doctor d : storage.getAllDoctors()) {
                 if (d.getSpecialty() == specialty) {
-                    filtered.add(d);
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put("id", d.getId());
+                    data.put("fullname", d.getFirstname() + " " + d.getLastname());
+                    data.put("specialty", d.getSpecialty().toString());
+                    doctorList.add(data);
                 }
             }
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("doctors", filtered);
-            return new Response("Doctors found.", Status.OK, data);
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("doctors", doctorList);
+            return new Response("Doctors found.", Status.OK, result);
         } catch (Exception e) {
             return new Response(e.getMessage(), Status.INTERNAL_SERVER_ERROR);
         }
